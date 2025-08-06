@@ -1,69 +1,127 @@
-@startuml DiagramaClasesAdministracion
+@startuml
 
-' Configuración
-skinparam package {
-  BackgroundColor #F0F8FF
-  BorderColor #4682B4
-}
-skinparam class {
-  BackgroundColor #F9F9F9
-  BorderColor #333333
-  ArrowColor #555555
+class Employee {
+  - _id: ObjectId
+  - names: String
+  - lastNames: String
+  - created: DateTime
+  - updated: DateTime
+  - userId: ObjectId
 }
 
-' Paquete 1: Autenticación (auth_app)
-package "auth_app" {
-  class User {
-    + _id: ObjectId
-    + username: String
-    + email: String
-    + isActive: Boolean
-    + resetKey: String
-    + activationKey: String
-    + created: Datetime
-    + updated: Datetime
-    + rolesIds: Array<ObjectId>
-  }
-
-  class Roles {
-    + _id: ObjectId
-    + name: String
-    + created: Datetime
-    + updated: Datetime
-  }
+class Priority {
+  - _id: ObjectId
+  - name: String
+  - created: DateTime
+  - updated: DateTime
 }
 
-' Paquete 2: Auditoría (audit_app)
-package "audit_app" {
-    class LogActividad {
-    + usuario: ForeignKey(Usuario)
-    + accion: CharField
-    + fecha: DateTimeField
-    + detalles: JSONField
-    }
-
-    class EventoSistema {
-    + tipo: CharField
-    + severidad: CharField
-    + mensaje: TextField
-    }
+class Asset {
+  - _id: ObjectId
+  - name: String
+  - description: String
+  - created: DateTime
+  - updated: DateTime
 }
 
-' Relaciones entre paquetes
-auth_app.Usuario "1" -- "1" auth_app.Perfil
-auth_app.Usuario "n" -- "m" auth_app.Grupo
-auth_app.Grupo "n" -- "m" auth_app.Permiso
-auth_app.Usuario "1" -- "n" audit_app.LogActividad
+class Tag{
+  - _id: ObjectId
+  - name: String
+  - created: DateTime
+  - updated: DateTime
+}
 
-' Notas
-note left of auth_app.Usuario
-    Extiende AbstractBaseUser
-    y PermissionsMixin
-end note
+class IssueState {
+  - _id: ObjectId
+  - name: String
+  - created: DateTime
+  - updated: DateTime
+}
 
-note right of audit_app.LogActividad
-    Registra todas las acciones
-    de los usuarios
-end note
+class Issue {
+  - _id: ObjectId
+  - resume: String
+  - description: String
+  - issueStateId: ObjectId
+  - priorityId: ObjectId
+  - assetsIds: Array[ObjectIds]
+  - tagsIds: Array[ObjectIds]
+  - visorsIds: Array[ObjectIds]
+  - editorsIds: Array[ObjectIds]
+  - histories: Array[ObjectIds]
+  - documents: Array[Document]
+  - reporterId: ObjectId
+  - reportered: DateTime
+  - created: DateTime
+  - updated: DateTime
+}
+
+class History {
+  - _id: ObjectId
+  - description: String
+  - reportered: ObjectId
+  - documents: Array[Document]
+  - created: DateTime
+  - updated: DateTim
+}
+
+class Document <<embedded>>{
+  - _id: ObjectId
+  - name: String
+  - description: String
+  - size: Integer
+  - mime: String
+  - url: String
+  - created: DateTime
+}
+
+class Track {
+  - _id: ObjectId
+  - issue_id: ObjectId
+  - logs: Array[Log]
+}
+
+class Log <<embedded>>{
+  - _id: ObjectId
+  - operation: String
+  - description: String
+  - user_id: String
+  - created: DateTime
+}
+
+class User {
+  + _id: ObjectId
+  + username: String
+  + email: String
+  + isActive: Boolean
+  + resetKey: String
+  + activationKey: String
+  + created: Datetime
+  + updated: Datetime
+  + rolesIds: Array<ObjectId>
+}
+
+class Roles {
+  + _id: ObjectId
+  + name: String
+  + created: Datetime
+  + updated: Datetime
+}
+
+Issue "n" *-- "1" Employee : crea
+Issue "n" o-- "n" Employee : mira
+Issue "n" o-- "n" Employee : edita
+Issue "n" *-- "1" IssueState : tiene
+Issue "n" *-- "1" Priority : tiene
+Issue "n" o-- "n" Asset : tiene
+Issue "n" o-- "n" Tag : tiene
+Issue "1" o-- "n" History : tiene
+Issue "1" o-- "n" Document : tiene
+History "1" o-- "n" Document : tiene
+History "1" *-- "n" Employee : genera
+Track "1" *-- "n" Log : registra
+Issue "1" --* "n" Track : registra
+Roles "1" --* "n" User : tiene
+User "1" --o "1" Employee : tiene
 
 @enduml

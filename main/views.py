@@ -5,4 +5,4 @@ def index(request):
     'page_title': 'Página Principal',
     'items': ['Item 1', 'Item 2', 'Item 3']
   }
-  return render(request, 'index.html', context)
+  return render(request, 'main/index.html', context)

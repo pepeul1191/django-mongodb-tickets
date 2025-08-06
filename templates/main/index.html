@@ -1,0 +1,302 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketMaster - Gestión de Incidencias</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos personalizados -->
+    <style>
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('{% static "img/tech-bg.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #0d6efd;
+        }
+        .testimonial-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+          /* Estilos personalizados para el footer */
+        .hover-white:hover {
+            color: white !important;
+        }
+        
+        .text-white-50 {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .text-muted {
+            --bs-text-opacity: 1;
+            color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-ticket-alt me-2"></i>TicketMaster
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Características</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">Cómo funciona</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Testimonios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contacto</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-light" href="/sign-in">
+                            <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Slider/Carrusel -->
+    <section id="home" class="hero-section">
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="container text-center py-5">
+                        <h1 class="display-4 fw-bold mb-4">Solución Integral para Gestión de Tickets</h1>
+                        <p class="lead mb-5">Optimiza el manejo de incidencias en tu organización con nuestra plataforma especializada</p>
+                        <a href="#how-it-works" class="btn btn-primary btn-lg me-2">Cómo funciona</a>
+                        <a href="/sign-in" class="btn btn-outline-light btn-lg">Acceder al sistema</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="container text-center py-5">
+                        <h1 class="display-4 fw-bold mb-4">Seguimiento en Tiempo Real</h1>
+                        <p class="lead mb-5">Monitorea el estado de todas tus incidencias desde cualquier dispositivo</p>
+                        <a href="#features" class="btn btn-primary btn-lg">Ver características</a>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Características Principales</h2>
+                <p class="lead text-muted">Todo lo que necesitas para una gestión eficiente de incidencias</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <h3 class="h5">Gestión Centralizada</h3>
+                            <p class="text-muted">Organiza y prioriza todos tus tickets desde un único panel de control intuitivo.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <h3 class="h5">Notificaciones</h3>
+                            <p class="text-muted">Alertas en tiempo real para nuevos tickets y actualizaciones importantes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="h5">Reportes</h3>
+                            <p class="text-muted">Genera informes detallados y métricas de desempeño para tu equipo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-4">Cómo funciona nuestro sistema</h2>
+                    <div class="d-flex mb-4">
+                        <div class="me-4">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <span class="fw-bold">1</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="h5">Registro del ticket</h4>
+                            <p class="text-muted mb-0">Los usuarios reportan incidencias a través de un formulario sencillo.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-4">
+                        <div class="me-4">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <span class="fw-bold">2</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="h5">Asignación automática</h4>
+                            <p class="text-muted mb-0">El sistema distribuye los tickets según especialización y carga de trabajo.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="me-4">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <span class="fw-bold">3</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="h5">Solución y seguimiento</h4>
+                            <p class="text-muted mb-0">Los técnicos resuelven las incidencias con comunicación constante.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{% static 'img/workflow.png' %}" alt="Flujo de trabajo" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Lo que dicen nuestros clientes</h2>
+                <p class="lead text-muted">Experiencias reales con nuestro sistema</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <img src="{% static 'img/testimonial1.jpg' %}" alt="Cliente 1" class="testimonial-img rounded-circle mb-3">
+                            <p class="fst-italic mb-4">"Desde que implementamos TicketMaster, redujimos el tiempo de respuesta a incidencias en un 60%."</p>
+                            <h5 class="mb-1">María González</h5>
+                            <p class="text-muted small">Directora de TI, Empresa XYZ</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <img src="{% static 'img/testimonial2.jpg' %}" alt="Cliente 2" class="testimonial-img rounded-circle mb-3">
+                            <p class="fst-italic mb-4">"La interfaz es tan intuitiva que nuestros empleados la adoptaron sin necesidad de capacitación."</p>
+                            <h5 class="mb-1">Carlos Mendoza</h5>
+                            <p class="text-muted small">Gerente de Operaciones, ABC Corp</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <img src="{% static 'img/testimonial3.jpg' %}" alt="Cliente 3" class="testimonial-img rounded-circle mb-3">
+                            <p class="fst-italic mb-4">"Los reportes automatizados nos han ahorrado cientos de horas de trabajo manual cada mes."</p>
+                            <h5 class="mb-1">Laura Jiménez</h5>
+                            <p class="text-muted small">Jefa de Soporte, ServiTech</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="fw-bold mb-4">¿Listo para optimizar tu gestión de incidencias?</h2>
+                    <p class="lead mb-5">Contáctanos para una demostración personalizada</p>
+                    <a href="mailto:info@ticketmaster.com" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-envelope me-1"></i> Escríbenos
+                    </a>
+                    <a href="tel:+123456789" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-phone me-1"></i> Llámanos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-ticket-alt me-2"></i>TicketMaster</h5>
+                    <p class="small text-muted">Solución profesional para la gestión de tickets e incidencias técnicas.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Enlaces</h5>
+                    <ul class="list-unstyled small">
+                        <li><a href="#features" class="text-decoration-none text-muted">Características</a></li>
+                        <li><a href="#how-it-works" class="text-decoration-none text-muted">Cómo funciona</a></li>
+                        <li><a href="#testimonials" class="text-decoration-none text-muted">Testimonios</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Legal</h5>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-decoration-none text-muted">Términos</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Privacidad</a></li>
+                        <li><a href="/sign-in" class="text-decoration-none text-muted">Acceso técnicos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-secondary">
+            <div class="text-center small text-muted">
+                <p class="mb-0">© 2023 TicketMaster. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
