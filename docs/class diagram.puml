@@ -1,0 +1,69 @@
+@startuml DiagramaClasesAdministracion
+
+' Configuración
+skinparam package {
+  BackgroundColor #F0F8FF
+  BorderColor #4682B4
+}
+skinparam class {
+  BackgroundColor #F9F9F9
+  BorderColor #333333
+  ArrowColor #555555
+}
+
+' Paquete 1: Autenticación (auth_app)
+package "auth_app" {
+  class User {
+    + _id: ObjectId
+    + username: String
+    + email: String
+    + isActive: Boolean
+    + resetKey: String
+    + activationKey: String
+    + created: Datetime
+    + updated: Datetime
+    + rolesIds: Array<ObjectId>
+  }
+
+  class Roles {
+    + _id: ObjectId
+    + name: String
+    + created: Datetime
+    + updated: Datetime
+  }
+}
+
+' Paquete 2: Auditoría (audit_app)
+package "audit_app" {
+    class LogActividad {
+    + usuario: ForeignKey(Usuario)
+    + accion: CharField
+    + fecha: DateTimeField
+    + detalles: JSONField
+    }
+
+    class EventoSistema {
+    + tipo: CharField
+    + severidad: CharField
+    + mensaje: TextField
+    }
+}
+
+' Relaciones entre paquetes
+auth_app.Usuario "1" -- "1" auth_app.Perfil
+auth_app.Usuario "n" -- "m" auth_app.Grupo
+auth_app.Grupo "n" -- "m" auth_app.Permiso
+auth_app.Usuario "1" -- "n" audit_app.LogActividad
+
+' Notas
+note left of auth_app.Usuario
+    Extiende AbstractBaseUser
+    y PermissionsMixin
+end note
+
+note right of audit_app.LogActividad
+    Registra todas las acciones
+    de los usuarios
+end note
+
+@enduml

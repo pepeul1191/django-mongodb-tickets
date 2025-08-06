@@ -1,1 +1,55 @@
-managment
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="main-content">
+  <div class="container-fluid py-4">
+    <h1 class="mb-4">Bienvenido, {{ request.user.username }}</h1>
+    
+    <!-- Widgets -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card bg-primary text-white mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Usuarios</h5>
+            <h2 class="card-text">1,024</h2>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card bg-success text-white mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Ventas</h5>
+            <h2 class="card-text">$24,500</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Gráficos -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-chart-line me-1"></i>
+        Actividad Reciente
+      </div>
+      <div class="card-body">
+        <canvas id="activityChart"></canvas>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Script para el gráfico
+  document.addEventListener('DOMContentLoaded', function() {
+
+    
+    // Toggle sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('collapsed');
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+<div class="sidebar bg-primary text-white">
+  <div class="sidebar-header p-3">
+    <h3>MiPanel</h3>
+  </div>
+
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link active" href="/management">
+        <i class="fas fa-home me-2"></i> Inicio
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="/management/users">
+        <i class="fas fa-users me-2"></i> Usuarios
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="#productosSubmenu" data-bs-toggle="collapse">
+        <i class="fas fa-boxes me-2"></i> Productos
+      </a>
+      <ul id="productosSubmenu" class="collapse nav flex-column ps-4">
+        <li class="nav-item">
+          <a class="nav-link" href="/management/products">Lista</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/management/new">Agregar</a>
+        </li>
+      </ul>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="/management/config">
+        <i class="fas fa-cog me-2"></i> Configuración
+      </a>
+    </li>
+  </ul>
+</div>
