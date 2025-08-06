@@ -1,5 +1,26 @@
 @startuml
 
+
+class Location {
+  - id: ObjectId
+  - name: String
+  - type: String
+  - parentId: ObjectId
+}
+
+Location "1" --* "n" Location : pertenece
+
+class Company {
+  + businessName: String
+  + tradeName: String
+  + taxId: String {11 digits} // RUC in Peru
+  + fiscalAddress: String
+  + locationId: ObjectId
+  + phone: String
+  + email: String
+  + website: String
+}
+
 class Employee {
   - _id: ObjectId
   - names: String
@@ -7,7 +28,10 @@ class Employee {
   - created: DateTime
   - updated: DateTime
   - userId: ObjectId
+  - enterpriseId: ObjectId
 }
+
+Employee "1" --* "n" Company : pertenece
 
 class Priority {
   - _id: ObjectId
@@ -95,6 +119,7 @@ class User {
   + email: String
   + isActive: Boolean
   + resetKey: String
+  + googleUserId: String
   + activationKey: String
   + created: Datetime
   + updated: Datetime
