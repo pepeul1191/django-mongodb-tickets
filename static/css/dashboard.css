@@ -54,3 +54,8 @@ body.dashboard-layout {
 .nav-link{
   color: #FFF;
 }
+
+.nav-link:hover{
+  background-color: #dadada !important;
+  color: #343434;
+}

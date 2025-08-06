@@ -22,5 +22,5 @@ urlpatterns = [
   path('', views.index, name='home'),
   path('sign-in', views.sing_in, name='sign_in'),
   path('reset-password', views.reset_password, name='reset_password'),
-  path('managment/', include('management.urls')),
+  path('management/', include('management.urls')),
 ]

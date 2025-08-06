@@ -82,6 +82,20 @@ DATABASES = {
     }
 }
 
+from mongoengine import connect
+from dotenv import load_dotenv
+import os
+
+# Cargar variables de entorno desde .env
+load_dotenv()
+
+connect(
+    db=os.getenv("MONGO_DB_NAME"),  # Nombre de la BD
+    host=os.getenv("MONGO_HOST"),   # URL de conexión
+    #username=os.getenv("MONGO_USER"),  # Usuario (opcional)
+    #password=os.getenv("MONGO_PASS"),  # Contraseña (opcional)
+    #authentication_source=os.getenv("MONGO_AUTH_SOURCE", "admin"),  # Valor por defecto 'admin'
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

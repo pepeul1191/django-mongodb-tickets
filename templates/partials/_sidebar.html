@@ -1,18 +1,54 @@
 <div class="sidebar bg-primary text-white">
   <div class="sidebar-header p-3">
-    <h3>MiPanel</h3>
+    <h3><i class="fa fa-ticket" style="margin-right: 0.5rem;"></i>TicketMaster</h3>
   </div>
 
   <ul class="nav flex-column">
     <li class="nav-item">
-      <a class="nav-link active" href="/management">
+      <a class="nav-link {% if nav_link == '' %}active{% endif %}" href="/management">
         <i class="fa fa-home me-2"></i> Inicio
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link {% if nav_link == 'locations' %}active{% endif %}" href="/management/locations">
+        <i class="fa fa-map me-2"></i> Locaciones
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/management/enterprises">
+        <i class="fa fa-industry me-2"></i> Empresas
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/management/roles">
+        <i class="fa fa-list me-2"></i> Roles de Usuarios
       </a>
     </li>
     
     <li class="nav-item">
       <a class="nav-link" href="/management/users">
         <i class="fa fa-users me-2"></i> Usuarios
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/management/employees">
+        <i class="fa fa-user me-2"></i> Empleados
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/management/assets">
+        <i class="fa fa-cube me-2"></i> Inventarios
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/management/tags">
+        <i class="fa fa-tag me-2"></i> Etiquetas
       </a>
     </li>
     

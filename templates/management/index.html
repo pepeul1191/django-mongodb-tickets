@@ -1,5 +1,11 @@
 {% extends 'application.html' %}
 
+{% block extra_js %}
+{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
 {% block content %}
 <main class="main-content">
   <div class="container-fluid py-4">
@@ -38,18 +44,4 @@
     </div>
   </div>
 </main>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  // Script para el gráfico
-  document.addEventListener('DOMContentLoaded', function() {
-
-    
-    // Toggle sidebar
-    document.getElementById('sidebarToggle').addEventListener('click', function() {
-      document.querySelector('.sidebar').classList.toggle('collapsed');
-    });
-  });
-</script>
 {% endblock %}
