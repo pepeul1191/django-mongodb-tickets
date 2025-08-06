@@ -9,8 +9,11 @@
   },
   "type": "module",
   "scripts": {
+    "dev:rollup": "rollup -c -w",
+    "dev:django": "python manage.py runserver",
+    "dev": "concurrently -p \"[{name}]\" -n \"ROLLUP,DJANGO\" -c \"bgRed.bold,bgGreen.bold\" \"npm run dev:rollup\" \"npm run dev:django\"",
     "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "start": "python manage.py runserver"
   },
   "keywords": [],
   "author": "",

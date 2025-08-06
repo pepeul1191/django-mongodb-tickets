@@ -1,0 +1,20 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+  <title>{% block title %}Mi Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'dist/vendor.min.css' %}">
+  <!-- Estilos personalizados -->  
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  {% block content %}{% endblock %}
+  
+  <script src="{% static 'dist/vendor.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
