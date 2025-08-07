@@ -1,8 +1,12 @@
 from bson import ObjectId
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.contrib import messages
 from management.models import Location 
 from mongoengine.errors import DoesNotExist
+from management.forms.locations_forms import DepartmentForm
+
+nav_link = 'locations'
 
 def locations(request):
   if request.method == 'GET':
@@ -57,7 +61,7 @@ def locations_districts(request, department_id, province_id):
     districts = Location.objects.filter(type="district", parent_id=province.id)
 
     context = {
-      'nav_link': 'locations',
+      'nav_link': nav_link,
       'departments': departments,
       'department': department,
       'provinces': provinces,
@@ -70,3 +74,95 @@ def locations_districts(request, department_id, province_id):
     # Manejar error si el ID no existe o es inválido
     return render(request, '404.html', status=404)
   
+def departments(request):
+  context = {
+    'nav_link': nav_link,
+  }
+
+  if request.method == 'POST':
+    form = DepartmentForm(request.POST)
+    
+    if form.is_valid():
+      try:
+        department = Location(
+          name=form.cleaned_data['name'],
+          type='department',
+          parent_id=None,
+        )
+        department.save()
+        messages.success(request, 'Departamento agregado exitosamente.')
+        return redirect('locations')
+
+      except Exception as e:
+        messages.error(request, f'Error en MongoDB: {str(e)}')
+        return render(request, 'management/locations/departments.html', context)
+    else:
+      context['form'] = form
+      messages.error(request, 'Formulario no válido, no se pudo grabar el departamento.')
+      return render(request, 'management/locations/departments.html', context, status=401)
+  elif request.method == 'GET':
+    return render(request, 'management/locations/departments.html', context)
+
+def departments_edit(request, department_id):
+  context = {
+    'nav_link': nav_link,
+    'editing': True,
+  }
+
+  if request.method == 'POST':
+    form = DepartmentForm(request.POST)
+    
+    if form.is_valid():
+      try:
+        department = Location.objects.get(id=ObjectId(department_id))
+        # Actualizar el departamento existente
+        department.name = form.cleaned_data['name']
+        department.save()  # Esto actualizará el documento existente
+        
+        messages.success(request, 'Departamento actualizado exitosamente.')
+        return redirect('locations')
+
+      except Exception as e:
+        messages.error(request, f'Error en MongoDB: {str(e)}')
+        return render(request, 'management/locations/departments.html', context)
+    else:
+      context['form'] = form
+      messages.error(request, 'Formulario no válido, no se pudo actualizar el departamento.')
+      return render(request, 'management/locations/departments.html', context, status=401)
+      
+  elif request.method == 'GET':
+    try:
+      department = Location.objects.get(id=ObjectId(department_id))
+      context['editing'] = True
+      form = DepartmentForm(initial={
+        'id': department.id,
+        'name': department.name,
+        'parent_id': department.parent_id,
+      })
+      
+      context['form'] = form
+      return render(request, 'management/locations/departments.html', context)
+    except (DoesNotExist, Exception) as e:
+      # Manejar error si el ID no existe o es inválido
+      return render(request, '404.html', status=404)
+
+def departments_delete(request, department_id):
+  context = {
+    'nav_link': nav_link,
+  }
+
+  try:
+    department = Location.objects.get(id=ObjectId(department_id))
+    department.delete()
+    
+    messages.success(request, 'Departamento eliminado exitosamente.')
+    return redirect('locations')
+  except (DoesNotExist, Exception) as e:
+    # Manejar error si el ID no existe o es inválido
+    return render(request, '404.html', status=404)
+
+def provinces(request):
+  pass
+
+def districts(request):
+  pass

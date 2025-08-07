@@ -59,3 +59,7 @@ body.dashboard-layout {
   background-color: #dadada !important;
   color: #343434;
 }
+
+h2 a {
+  text-decoration: none;
+}
