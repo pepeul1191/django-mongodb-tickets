@@ -1,0 +1,87 @@
+{% extends 'application.html' %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Inicialización
+  const autocomplete = new AutoComplete({
+    inputId: 'searchInput',
+    suggestionsId: 'suggestionsContainer',
+    hiddenInputId: 'selectedId',
+    apiUrl: '/api/v1/locations/search',
+    jwtToken: 'tu_token_jwt',
+    displayKey: 'full_name',
+    valueKey: 'district_id',
+    minChars: 2
+  });
+
+  // Escuchar selecciones
+  document.getElementById('searchInput').addEventListener('autocomplete-select', (e) => {
+    console.log('Seleccionado:', e.detail);
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+  <div class="container-fluid py-4">
+    <h3 class="mb-4"><i class="fa fa-industry me-4"></i>Gestión de Datos de Empresas</h3>
+
+    <!-- Mensajes de error generales -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header p-3">
+            <h5 class="mb-0">
+              <i class="fa fa-info-circle me-2"></i>
+              Filtros de Búsqueda
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="col-md-5 autocomplete-wrapper" style="overflow-x: auto; white-space: nowrap;">
+              <label class="form-label">Nombre de la Provincia</label>
+              <input type="text" id="searchInput" class="form-control" placeholder="Buscar...">
+              <input type="hidden" id="selectedId">
+              <div id="suggestionsContainer" class="suggestion-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mb-4">
+      <div class="card-header">
+        Lista de Empresas
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4>Departamentos</h4>
+              <a href="/management/enterprises/add" class="btn btn-success btn-sm">
+                <i class="fa fa-plus"></i> Agregar
+              </a>
+            </div>
+
+            <table class="table table-sm table-hover">
+              
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+{% endblock %}

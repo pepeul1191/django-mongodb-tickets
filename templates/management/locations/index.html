@@ -27,7 +27,7 @@
 {% block content %}
 <main class="main-content">
   <div class="container-fluid py-4">
-    <h2 class="mb-4"><i class="fa fa-map me-4"></i>Gestión de Locaciones</h2>
+    <h3 class="mb-4"><i class="fa fa-map me-4"></i>Gestión de Locaciones</h3>
 
     <!-- Mensajes de error generales -->
     {% if messages %}
@@ -43,10 +43,10 @@
       <div class="col-12">
         <div class="card mb-4">
           <div class="card-header p-3">
-            <h5 class="mb-0">
+            <h6 class="mb-0">
               <i class="fa fa-info-circle me-2"></i>
               Prueba de Autocompletado de Búsqueda de Locaciones
-            </h5>
+            </h6>
           </div>
           <div class="card-body p-4">
             <div class="col-md-5 autocomplete-wrapper" style="overflow-x: auto; white-space: nowrap;">
@@ -62,13 +62,16 @@
     
     <div class="card mb-4">
       <div class="card-header">
-        Lista de Departamentos / Provincias / Distritos
+        <h6 class="mb-0">
+          <i class="fa fa-list me-2"></i>
+          Lista de Departamentos / Provincias / Distritos
+        </h6>
       </div>
       <div class="card-body">
         <div class="row">
           <div class="col-md-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4>Departamentos</h4>
+              <h5>Departamentos del Perú</h5>
               <a href="/management/locations/departments" class="btn btn-success btn-sm">
                 <i class="fa fa-plus"></i> Agregar
               </a>
@@ -121,7 +124,7 @@
           {% if provinces != None %}
           <div class="col-md-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4>Provincias de {{ department.name }}</h4>
+              <h5>Provincias de {{ department.name }}</h5>
               <a href="/management/locations/{{ department.id }}/provinces/add" class="btn btn-success btn-sm">
                 <i class="fa fa-plus"></i> Agregar
               </a>
@@ -174,7 +177,7 @@
           {% if districts != None %}
           <div class="col-md-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4>Distritos de {{ province.name }}</h4>
+              <h5>Distritos de {{ province.name }}</h5>
               <a href="/management/locations/{{ department.id }}/provinces/{{ province.id }}/districts/add" class="btn btn-success btn-sm">
                 <i class="fa fa-plus"></i> Agregar
               </a>

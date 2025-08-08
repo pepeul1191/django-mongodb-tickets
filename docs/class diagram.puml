@@ -10,15 +10,19 @@ class Location {
 
 Location "1" --* "n" Location : pertenece
 
-class Company {
-  + businessName: String
-  + tradeName: String
-  + taxId: String {11 digits} // RUC in Peru
-  + fiscalAddress: String
-  + locationId: ObjectId
-  + phone: String
-  + email: String
-  + website: String
+class Enterprise {
+  - id: ObjectId
+  - businessName: String
+  - tradeName: String
+  - taxId: String {11 digits} // RUC in Peru
+  - fiscalAddress: String
+  - locationId: ObjectId
+  - phone: String
+  - email: String
+  - website: String
+  - imageUrl: String
+  - created: DateTime
+  - updated: DateTime
 }
 
 class Employee {
@@ -31,7 +35,7 @@ class Employee {
   - enterpriseId: ObjectId
 }
 
-Employee "1" --* "n" Company : pertenece
+Employee "1" --* "n" Enterprise : pertenece
 
 class Priority {
   - _id: ObjectId
