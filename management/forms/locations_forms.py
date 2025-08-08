@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from bson import ObjectId
 from bson.errors import InvalidId
 
-class DepartmentForm(forms.Form):
+class LocationForm(forms.Form):
   id = forms.CharField(required=False, widget=forms.HiddenInput())
   name = forms.CharField(max_length=100, required=True)
   parent_id = forms.CharField(required=False, widget=forms.HiddenInput())

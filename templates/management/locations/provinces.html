@@ -28,7 +28,7 @@
           </div>
           <div class="card-body p-4">
             
-            <form method="post"  action="{% if editing %}/management/locations/{{department.id}}/provinces/edit {% else %}/management/locations/{{department.id}}/provinces{% endif %}">
+            <form method="post"  action="{% if editing %}/management/locations/{{department.id}}/provinces/{{province.id}}/edit {% else %}/management/locations/{{department.id}}/provinces/add{% endif %}">
               {% csrf_token %}
               
               <!-- Campo ID oculto para edición -->
