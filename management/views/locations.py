@@ -260,5 +260,120 @@ def provinces_add(request, department_id):
       messages.error(request, f'Error en MongoDB: {str(e)}')
       return redirect(f"/management/locations/")
 
-def districts(request):
-  pass
+def districts_add(request, department_id, province_id):
+  context = {
+    'nav_link': nav_link,
+  }
+
+  if request.method == 'POST':
+    form = LocationForm(request.POST)
+    
+    if form.is_valid():
+      try:
+        department = Location(
+          name=form.cleaned_data['name'],
+          type='district',
+          parent_id=form.clean_parent_id(),
+        )
+        department.save()
+        messages.success(request, 'Distrito agregada exitosamente.')
+        return redirect(f"/management/locations/{department_id}/provinces/{province_id}/districts")
+
+      except Exception as e:
+        messages.error(request, f'Error en MongoDB: {str(e)}')
+        department = Location.objects.get(id=ObjectId(department_id))
+        context['department'] = department
+        return render(request, 'management/locations/districts.html', context)
+    else:
+      context['form'] = form
+      messages.error(request, 'Formulario no válido, no se pudo grabar la provincia.')
+      department = Location.objects.get(id=ObjectId(department_id))
+      context['department'] = department
+      return render(request, 'management/locations/districts.html', context, status=401)
+  elif request.method == 'GET':
+    try:
+      department = Location.objects.get(id=ObjectId(department_id))
+      context['department'] = department
+      province = Location.objects.get(id=ObjectId(province_id))
+      context['province'] = province
+      return render(request, 'management/locations/districts.html', context)
+    except Exception as e:
+      messages.error(request, f'Error en MongoDB: {str(e)}')
+      return redirect(f"/management/locations/{department_id}/provinces/{province_id}/districts")
+
+def districts_edit(request, department_id, province_id, district_id):
+  context = {
+    'nav_link': 'locations',
+    'editing': True
+  }
+  try:
+    try:
+      department = Location.objects.get(id=ObjectId(department_id))
+    except (Location.DoesNotExist):
+      from django.http import Http404
+      raise Http404("Departamento no existe")
+    
+    try:
+      province = Location.objects.get(id=ObjectId(province_id))
+    except (Location.DoesNotExist):
+      from django.http import Http404
+      raise Http404("Provincia no existe")
+    
+    try:
+      district = Location.objects.get(id=ObjectId(district_id))
+    except (Location.DoesNotExist):
+      from django.http import Http404
+      raise Http404("Provincia no existe")
+
+    if request.method == 'POST':
+      form = LocationForm(request.POST)
+      
+      if form.is_valid():
+        try:
+          district.name = form.cleaned_data['name']
+          district.save()
+          messages.success(request, 'Distrito actualizado exitosamente.')    
+          return redirect(f'/management/locations/{str(department.id)}/provinces/{str(province.id)}/districts')
+        
+        except Exception as e:
+          messages.error(request, f'Error en MongoDB: {str(e)}')
+          context['form'] = form
+          context['district'] = district
+          context['province'] = province
+          context['department'] = department
+          return render(request, 'management/locations/districts.html', context)
+      
+      else:
+        messages.error(request, 'Formulario no válido')
+        context['form'] = form
+        context['district'] = district
+        context['province'] = province
+        context['department'] = department
+        return render(request, 'management/locations/districts.html', context, status=400)
+    
+    else:  # GET
+      form = LocationForm(initial={
+        'name': district.name,
+        'parent_id': str(province.id)
+      })
+      context['province'] = province
+      context['department'] = department
+      context['district'] = district
+      context['form'] = form
+      return render(request, 'management/locations/districts.html', context)
+
+  except Exception as e:
+    messages.error(request, f'Error: {str(e)}')
+    return render(request, '404.html', status=404)
+
+
+def districts_delete(request, department_id, province_id, district_id):
+  try:
+    district = Location.objects.get(id=ObjectId(district_id))
+    district.delete()
+    
+    messages.success(request, 'Distrito eliminado exitosamente.')
+    return redirect(f"/management/locations/{department_id}/provinces/{province_id}/districts")
+  except (DoesNotExist, Exception) as e:
+    # Manejar error si el ID no existe o es inválido
+    return render(request, '404.html', status=404)

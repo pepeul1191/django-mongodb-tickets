@@ -1,6 +1,6 @@
 from django.urls import path
 from .views.index import home
-from .views.locations import locations,locations_provinces , locations_districts, departments, departments_edit, departments_delete, districts, provinces_add, provinces_edit, provinces_delete
+from .views.locations import locations,locations_provinces , locations_districts, departments, departments_edit, departments_delete, provinces_add, provinces_edit, provinces_delete, districts_add, districts_edit, districts_delete
 
 urlpatterns = [
   path('', home, name='managment_index'),
@@ -17,5 +17,7 @@ urlpatterns = [
   path('locations/<str:department_id>/provinces/<str:province_id>/delete', provinces_delete, name='provices_delete'),
   # locations - districts
   path('locations/<str:department_id>/provinces/<str:province_id>/districts', locations_districts, name='location_districts'),
-  path('locations/add/districts', districts, name='location_districts'),
+  path('locations/<str:department_id>/provinces/<str:province_id>/districts/add', districts_add, name='location_districts'),
+  path('locations/<str:department_id>/provinces/<str:province_id>/districts/<str:district_id>/edit', districts_edit, name='location_districts'),
+  path('locations/<str:department_id>/provinces/<str:province_id>/districts/<str:district_id>/delete', districts_delete, name='districts_delete'),
 ]
