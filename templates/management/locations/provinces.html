@@ -1,0 +1,112 @@
+{% extends 'application.html' %}
+
+{% block content %}
+<main class="main-content">
+  <div class="container-fluid py-4">
+    <h2 class="mb-4">
+      <a href="/management/locations/"><i class="fa fa-map me-2"></i>Gestión de Locaciones</a>
+      / {% if editing %}Editar{% else %}Nueva{% endif %} Provincia
+    </h2>
+
+    <div class="row">
+      <div class="col-12">
+        <!-- Mensajes de error generales -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+        <div class="card mb-4">
+          <div class="card-header p-3">
+            <h5 class="mb-0">
+              <i class="fa fa-info-circle me-2"></i>
+              Detalle de la Provincia
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            
+            <form method="post"  action="{% if editing %}/management/locations/{{department.id}}/provinces/edit {% else %}/management/locations/{{department.id}}/provinces{% endif %}">
+              {% csrf_token %}
+              
+              <!-- Campo ID oculto para edición -->
+              {% if form.id.value %}
+                <input type="hidden" name="id" value="{{ form.id.value }}">
+              {% endif %}
+              <div class="row">
+                <!-- Campo Nombre -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nombre de la Provincia</label>
+                  <input type="text" 
+                         name="name" 
+                         value="{{ form.name.value|default:'' }}"
+                         class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                         placeholder="Ej: Lima"
+                         requiredddd
+                         maxlength="100">
+                  
+                  {% if form.name.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.name.errors|join:", " }}
+                  </div>
+                  {% endif %}
+              </div>
+                
+                <!-- Campo Ubicación Superior -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Ubicación Superior (Departamento)</label>
+                  <input type="text" 
+                         class="form-control" 
+                         value="{{ department.name }}" 
+                         disabled>
+                  <input type="hidden" name="parent_id" value="{{ department.id }}">
+                </div>
+                
+                <!-- Campo Tipo -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Tipo</label>
+                  <input type="text" 
+                         class="form-control" 
+                         value="PROVINCIA" 
+                         disabled>
+                  <input type="hidden" name="type" value="province">
+                </div>
+              </div>
+              
+              <!-- Botones -->
+              <div class="mt-4 d-flex justify-content-end">
+                <a href="/management/locations/{{department.id}}/provinces" class="btn btn-light me-3">
+                  <i class="fa fa-times me-2"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa fa-save me-2"></i>
+                  {% if editing %}Actualizar{% else %}Guardar{% endif %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  .form-control:disabled {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 500;
+  }
+  .invalid-feedback {
+    display: block;
+  }
+</style>
+{% endblock %}

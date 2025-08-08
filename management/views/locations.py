@@ -161,8 +161,46 @@ def departments_delete(request, department_id):
     # Manejar error si el ID no existe o es inválido
     return render(request, '404.html', status=404)
 
-def provinces(request):
+def provinces_edit(request, department_id, province_id):
   pass
+
+def provinces_delete(request, department_id, province_id):
+  pass
+
+def provinces_add(request, department_id):
+  context = {
+    'nav_link': nav_link,
+  }
+
+  if request.method == 'POST':
+    form = DepartmentForm(request.POST)
+    
+    if form.is_valid():
+      try:
+        department = Location(
+          name=form.cleaned_data['name'],
+          type='department',
+          parent_id=None,
+        )
+        department.save()
+        messages.success(request, 'Departamento agregado exitosamente.')
+        return redirect('locations')
+
+      except Exception as e:
+        messages.error(request, f'Error en MongoDB: {str(e)}')
+        return render(request, 'management/locations/provinces.html', context)
+    else:
+      context['form'] = form
+      messages.error(request, 'Formulario no válido, no se pudo grabar el departamento.')
+      return render(request, 'management/locations/provinces.html', context, status=401)
+  elif request.method == 'GET':
+    try:
+      department = Location.objects.get(id=ObjectId(department_id))
+      context['department'] = department
+      return render(request, 'management/locations/provinces.html', context)
+    except Exception as e:
+      messages.error(request, f'Error en MongoDB: {str(e)}')
+      return redirect(f"/management/locations/")
 
 def districts(request):
   pass
