@@ -4,7 +4,8 @@ import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import css from 'rollup-plugin-css-only';
 import copy from 'rollup-plugin-copy';
-import babel from 'rollup-plugin-babel';
+import postcss from 'rollup-plugin-postcss';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -58,19 +59,39 @@ const Vendor = {
 };
 
 const App = {
-  input: 'src/entries/app.js',
+  input: 'src/entries/app.js', // Tu archivo de entrada principal
   output: {
-    file: 'static/dist/app.js',
-    format: 'iife'
+    file: 'static/dist/app.min.js',
+    format: 'iife',
+    sourcemap: !production
   },
   plugins: [
-    resolve(),
-    commonjs(),
-    babel({
-      exclude: 'node_modules/**',
-      presets: ['@babel/preset-env']
+    // Procesamiento de CSS
+    postcss({
+      extract: true, // Extrae CSS a archivo separado
+      minimize: production,
+      plugins: [
+        require('autoprefixer')() // Opcional: agrega prefijos vendor
+      ]
     }),
-    terser()
+
+    // Resolución de módulos
+    nodeResolve({
+      browser: true
+    }),
+
+    // Soporte para CommonJS
+    commonjs(),
+
+    // Minificación en producción
+    production && terser(),
+
+    // Copia archivos estáticos (opcional)
+    copy({
+      targets: [
+        { src: 'src/assets/*', dest: 'static/dist/assets' }
+      ]
+    })
   ]
 };
 

@@ -7,6 +7,7 @@
   <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
   <title>{% block title %}Mi Dashboard{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'dist/vendor.min.css' %}">
+  <link rel="stylesheet" href="{% static 'dist/app.min.css' %}">
   <!-- Estilos personalizados -->
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
   
@@ -29,6 +30,7 @@
 
   <!-- Bootstrap JS -->
   <script src="{% static 'dist/vendor.js' %}"></script>
+  <script src="{% static 'dist/app.min.js' %}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
   const sidebarToggle = document.getElementById('sidebarToggle');

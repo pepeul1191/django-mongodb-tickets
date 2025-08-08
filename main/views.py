@@ -14,3 +14,6 @@ def sing_in(request):
 def reset_password(request):
   context = {}
   return render(request, 'main/reset-password.html', context)
+
+def handler404(request, exception):
+  return render(request, '404.html', {}, status=404)

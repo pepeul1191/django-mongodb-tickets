@@ -23,4 +23,7 @@ urlpatterns = [
   path('sign-in', views.sing_in, name='sign_in'),
   path('reset-password', views.reset_password, name='reset_password'),
   path('management/', include('management.urls')),
+  path('api/', include('api.urls')),
 ]
+
+handler404 = 'main.views.handler404'

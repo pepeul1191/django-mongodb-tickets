@@ -18,8 +18,8 @@ Restaurar backup de la base de datos MongoDB:
 
 .env
 
-MONGO_DB_NAME=tickets_master
-MONGO_HOST=mongodb://localhost:27017/
-MONGO_USER=usuario_mongo
-MONGO_PASS=contraseña_segura
-MONGO_AUTH_SOURCE=admin
+    MONGO_DB_NAME=tickets_master
+    MONGO_HOST=mongodb://localhost:27017/
+    MONGO_USER=usuario_mongo
+    MONGO_PASS=contraseña_segura
+    MONGO_AUTH_SOURCE=admin

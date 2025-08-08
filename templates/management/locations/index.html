@@ -1,9 +1,27 @@
 {% extends 'application.html' %}
 
-{% block extra_js %}
+{% block extra_css %}
 {% endblock %}
 
-{% block extra_css %}
+{% block extra_js %}
+<script>
+  // Inicialización
+  const autocomplete = new AutoComplete({
+    inputId: 'searchInput',
+    suggestionsId: 'suggestionsContainer',
+    hiddenInputId: 'selectedId',
+    apiUrl: '/api/v1/locations/search',
+    jwtToken: 'tu_token_jwt',
+    displayKey: 'full_name',
+    valueKey: 'district_id',
+    minChars: 2
+  });
+
+  // Escuchar selecciones
+  document.getElementById('searchInput').addEventListener('autocomplete-select', (e) => {
+    console.log('Seleccionado:', e.detail);
+  });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -20,6 +38,27 @@
         </div>
       {% endfor %}
     {% endif %}
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header p-3">
+            <h5 class="mb-0">
+              <i class="fa fa-info-circle me-2"></i>
+              Prueba de Autocompletado de Búsqueda de Locaciones
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="col-md-5 autocomplete-wrapper" style="overflow-x: auto; white-space: nowrap;">
+              <label class="form-label">Nombre de la Provincia</label>
+              <input type="text" id="searchInput" class="form-control" placeholder="Buscar...">
+              <input type="hidden" id="selectedId">
+              <div id="suggestionsContainer" class="suggestion-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <div class="card mb-4">
       <div class="card-header">
@@ -184,7 +223,6 @@
       </div>
     </div>
 
-    
   </div>
 </main>
 {% endblock %}
