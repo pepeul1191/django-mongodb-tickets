@@ -107,16 +107,34 @@
                 <label for="updated" class="form-label">Actualizado</label>
                 <input type="datetime-local" class="form-control" id="updated" name="updated" disabled>
               </div>
-            </div>
-            
-            <div class="mt-4 d-flex justify-content-end">
-              <a href="/management/enterprises" class="btn btn-light me-3">
-                <i class="fa fa-times me-2"></i>Cancelar
-              </a>
-              <button type="submit" class="btn btn-primary">
-                <i class="fa fa-save me-2"></i>
-                {% if editing %}Actualizar{% else %}Guardar{% endif %}
-              </button>
+              <div class="col-md-6">
+                <div class="mb-3" id="fileUploadContainer">
+                  <label for="imageFile" class="form-label">Seleccionar imagen</label>
+                  <div class="input-group">
+                    <input 
+                      type="file" 
+                      class="form-control" 
+                      id="imageFile"
+                      accept=".jpg,.jpeg,.png"
+                    >
+                    <button class="btn btn-secondary" type="button" id="uploadButton">
+                      <i class="fas fa-upload"></i> Subir
+                    </button>
+                  </div>
+                  <small class="text-muted">Formatos aceptados: JPG, JPEG, PNG (Máx. 2MB)</small>
+                  <div id="errorMessage" class="text-danger mt-2"></div>
+                  <div id="successMessage" class="text-success mt-2"></div>
+                </div>
+              </div>
+              <div class="col-md-2 justify-content-end btn-row">
+                <a href="/management/enterprises" class="btn btn-light me-3">
+                  <i class="fa fa-times me-2"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa fa-save me-2"></i>
+                  {% if editing %}Actualizar{% else %}Guardar{% endif %}
+                </button>
+              </div>
             </div>
         </form>
       </div>
