@@ -17,8 +17,26 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link {% if nav_link == 'tags' %}active{% endif %}" href="/management/tags">
+        <i class="fa fa-tag me-2"></i> Etiquetas
+      </a>
+    </li>
+
+    <li class="nav-item">
       <a class="nav-link {% if nav_link == 'enterprises' %}active{% endif %}" href="/management/enterprises">
         <i class="fa fa-industry me-2"></i> Empresas
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link {% if nav_link == 'employees' %}active{% endif %}" href="/management/employees">
+        <i class="fa fa-user me-2"></i> Empleados
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link {% if nav_link == 'assets' %}active{% endif %}" href="/management/assets">
+        <i class="fa fa-cube me-2"></i> Activos
       </a>
     </li>
 
@@ -31,24 +49,6 @@
     <li class="nav-item">
       <a class="nav-link" href="/management/users">
         <i class="fa fa-users me-2"></i> Usuarios
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link" href="/management/employees">
-        <i class="fa fa-user me-2"></i> Empleados
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link" href="/management/assets">
-        <i class="fa fa-cube me-2"></i> Inventarios
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link" href="/management/tags">
-        <i class="fa fa-tag me-2"></i> Etiquetas
       </a>
     </li>
     

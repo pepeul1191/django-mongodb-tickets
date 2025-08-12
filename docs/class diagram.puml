@@ -21,6 +21,7 @@ class Enterprise {
   - email: String
   - website: String
   - imageUrl: String
+  - assetsIds: Array<ObjectId>
   - created: DateTime
   - updated: DateTime
 }
@@ -124,6 +125,7 @@ class User {
   + isActive: Boolean
   + resetKey: String
   + googleUserId: String
+  + imageUrl: String
   + activationKey: String
   + created: Datetime
   + updated: Datetime
