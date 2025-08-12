@@ -133,6 +133,7 @@ class User {
 class Roles {
   + _id: ObjectId
   + name: String
+  + description: String
   + created: Datetime
   + updated: Datetime
 }

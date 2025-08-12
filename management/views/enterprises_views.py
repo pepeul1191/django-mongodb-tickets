@@ -95,63 +95,6 @@ def delete_enterprise(request, enterprise_id):
     # Para este ejemplo, simplemente redirigimos de vuelta a la lista
     return redirect('enterprises_list')
 
-def enterprises_add(request):
-  context = {
-    'page_title': 'Gestión de Empresas',
-    'nav_link': 'enlace_de_navegacion', # Reemplaza con la variable correcta
-    'editing': False, # Indica que es un formulario para crear, no para editar
-  }
-
-  if request.method == 'GET':
-    form = EnterpriseForm()
-    context['form'] = form
-    return render(request, 'management/enterprises/detail.html', context)
-  
-  elif request.method == 'POST':
-    form = EnterpriseForm(request.POST)
-    
-    if form.is_valid():
-      try:
-        # Crea una nueva instancia de Enterprise a partir de los datos validados
-        enterprise = Enterprise(
-          business_name=form.cleaned_data['business_name'],
-          trade_name=form.cleaned_data['trade_name'],
-          tax_id=form.cleaned_data['tax_id'],
-          fiscal_address=form.cleaned_data['fiscal_address'],
-          location_id=ObjectId(form.cleaned_data['location_id']),
-          phone=form.cleaned_data['phone'],
-          email=form.cleaned_data['email'],
-          website=form.cleaned_data['website'],
-          image_url=request.POST.get('image_url', '')
-        )
-        
-        # Guarda el objeto en la base de datos
-        enterprise.save()
-
-        messages.success(request, '¡Empresa creada exitosamente!')
-        # Redirige a la página de detalle de la nueva empresa
-        return redirect('enterprise_detail', enterprise_id=str(enterprise.id))
-      
-      except Exception as e:
-        messages.error(request, f'Error al crear la empresa en MongoDB: {str(e)}')
-        context['form'] = form
-        return render(request, 'management/enterprises/detail.html', context, status=500)
-    else:
-      # Si el formulario no es válido, muestra los errores específicos
-      for field, errors in form.errors.items():
-        for error in errors:
-          messages.error(request, f"{form.fields[field].label}: {error}")
-      
-      context['form'] = form
-      return render(request, 'management/enterprises/detail.html', context, status=400)
-  
-  else:
-    # Manejar otros métodos de solicitud no permitidos
-    return JsonResponse({
-      'status': 'error',
-      'message': 'Método no permitido.'
-    }, status=405)
-
 def create_enterprise(request):
   context = {}
   

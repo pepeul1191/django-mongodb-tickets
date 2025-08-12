@@ -1,8 +1,6 @@
 from mongoengine import Document, ObjectIdField, StringField, DateTimeField
 from datetime import datetime
 from bson import ObjectId
-import pytz
-from pytz import timezone
 
 class Enterprise(Document):
   """

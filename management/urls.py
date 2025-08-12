@@ -2,6 +2,7 @@ from django.urls import path
 from .views.index_views import home
 from .views.locations_views import locations,locations_provinces , locations_districts, departments, departments_edit, departments_delete, provinces_add, provinces_edit, provinces_delete, districts_add, districts_edit, districts_delete
 from .views.enterprises_views import enterprises_list, create_enterprise, update_enterprise, delete_enterprise
+from .views.roles_views import roles_list, create_role, update_role, delete_role
 
 urlpatterns = [
   path('', home, name='managment_index'),
@@ -27,4 +28,10 @@ urlpatterns = [
   path('enterprises/<str:enterprise_id>', update_enterprise, name='enterprise_detail'),
   path('enterprises/<str:enterprise_id>/edit', update_enterprise, name='update_enterprise'),
   path('enterprises/<str:enterprise_id>/delete', delete_enterprise, name='delete_enterprise'),
+  # roles
+  path('roles/', roles_list, name='roles_list'),
+  path('roles/add', create_role, name='roles_add'),
+  path('roles/<str:role_id>', update_role, name='role_detail'),
+  path('roles/<str:role_id>/edit', update_role, name='update_role'),
+  path('roles/<str:role_id>/delete', delete_role, name='delete_role'),
 ]
