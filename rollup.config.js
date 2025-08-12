@@ -49,6 +49,10 @@ const Vendor = {
         {
           src: 'node_modules/font-awesome/fonts/*',
           dest: 'static/fonts/'
+        },
+        {
+          src: 'node_modules/simplemde/dist/*',
+          dest: 'static/dist/'
         }
       ]
     })

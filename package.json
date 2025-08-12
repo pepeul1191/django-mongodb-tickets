@@ -41,6 +41,7 @@
   "dependencies": {
     "axios": "^1.6.0",
     "bootstrap": "^5.3.3",
-    "font-awesome": "^4.7.0"
+    "font-awesome": "^4.7.0",
+    "simplemde": "^1.11.2"
   }
 }

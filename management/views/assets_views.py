@@ -49,7 +49,15 @@ def assets_list(request):
     assets = assets.filter(combined_query)
 
   if code_query:
-    query_list.append(Q(tax_id__icontains=code_query))
+    query_list.append(Q(code__icontains=code_query))
+
+  # Aplicar filtros si hay consultas
+  if query_list:
+    # Combinar todas las consultas con AND
+    combined_query = query_list[0]
+    for q in query_list[1:]:
+      combined_query &= q
+    assets = assets.filter(combined_query)
 
   # Lógica de paginación
   total_assets = assets.count()
@@ -66,6 +74,7 @@ def assets_list(request):
     'page_title': 'Gestión de Activos',
     'assets': paginated_assets,
     'search_query': search_query,
+    'code_query': code_query,
     'page': page_number,
     'per_page': per_page,
     'total_assets': total_assets,

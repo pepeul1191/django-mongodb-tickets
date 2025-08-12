@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
   <title>{% block title %}Mi Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'dist/simplemde.min.css' %}">
   <link rel="stylesheet" href="{% static 'dist/vendor.min.css' %}">
   <link rel="stylesheet" href="{% static 'dist/app.min.css' %}">
   <!-- Estilos personalizados -->
@@ -34,6 +35,7 @@
   </div>
 
   <!-- Bootstrap JS -->
+  <script src="{% static 'dist/simplemde.min.js' %}"></script>
   <script src="{% static 'dist/vendor.js' %}"></script>
   <script src="{% static 'dist/app.min.js' %}"></script>
   <script>

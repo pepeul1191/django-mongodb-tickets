@@ -1,9 +1,36 @@
 {% extends 'application.html' %}
 {% load main_filters %} 
 {% block extra_css %}
+<style>
+  #description-container {
+    max-height: 400px; /* Ajusta la altura máxima según tus necesidades */
+    overflow-y: auto; /* Agrega el scroll cuando el contenido sobrepase el max-height */
+  }
+</style>
 {% endblock %}
 
 {% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // content
+    new SimpleMDE({
+      element: document.getElementById("description"),
+      spellChecker: false,
+      autosave: {
+        enabled: false,
+        uniqueId: "1", // Opcional, para guardar automáticamente
+      },
+      initialValue: `{{ asset.description|safe }}`,
+      promptURLs: true,
+      toolbar: [
+        "bold", "italic", "heading", "|",
+        "quote", "unordered-list", "ordered-list", "|",
+        "link", "image", "table", "horizontal-rule", "|",
+        "preview", 
+      ]
+    });
+  });
+</script> 
 {% endblock %}
 
 {% block content %}
@@ -60,8 +87,10 @@
           </div>
           
           <div class="row mb-3">
-            <div class="col-md-12">
+            <div class="col-md-12" id="description-container">
               <label for="description" class="form-label">Descripción del Activo</label>
+              <textarea id="description" name="description">
+              </textarea>
             </div>
           </div>
         </form>
