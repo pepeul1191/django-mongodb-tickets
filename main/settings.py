@@ -40,11 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'management',
     'api', 
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main.helpers.custom_urls',
             ],
         },
     },
@@ -137,3 +140,49 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# Configuración CORS
+# Configuración CORS actualizada
+CORS_ALLOW_ALL_ORIGINS = False  # Más seguro que True en desarrollo
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",  # Tu frontend Django
+    "http://127.0.0.1:8000",  # Alternativa localhost
+    "http://localhost:4000",  # Tu backend Go
+    "http://127.0.0.1:4000",  # Alternativa backend Go
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# Configuración de cookies y seguridad
+SESSION_COOKIE_SAMESITE = 'Lax'  # Cambiado de 'None' por seguridad
+SESSION_COOKIE_SECURE = False    # False en desarrollo, True en producción
+CSRF_COOKIE_SECURE = False       # False en desarrollo, True en producción
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',     # Tu frontend
+    'http://127.0.0.1:8000',
+    'http://localhost:4000',     # Tu backend Go
+    'http://127.0.0.1:4000',
+]
+
+# Si necesitas permitir credenciales (cookies, auth)
+CORS_ALLOW_CREDENTIALS = True

@@ -10,11 +10,11 @@ Congiruación de amibente para desarrollar:
 
 Crear backup de la base de datos MongoDB:
 
-    $ sudo mongodump --db peru --out db/
+    $ sudo mongodump --db tickes_master --out db/
 
 Restaurar backup de la base de datos MongoDB:
 
-    $ sudo mongorestore --db peru db/peru
+    $ sudo mongorestore --db tickes_master db/tickes_master
 
 .env
 

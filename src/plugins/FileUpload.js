@@ -1,14 +1,31 @@
-class FileUpload {
+export class FileUpload {
   constructor(options = {}) {
+    // Configurable DOM element IDs
+    this.containerId = options.containerId || "fileUploadContainer";
+    this.fileInputId = options.fileInputId || "imageFile";
+    this.uploadButtonId = options.uploadButtonId || "uploadButton";
+    this.viewButtonId = options.viewButtonId || "viewImageButton";
+    this.errorMessageId = options.errorMessageId || "errorMessage";
+    this.successMessageId = options.successMessageId || "successMessage";
+    this.helpTextId = options.helpTextId || "helpText";
+    this.labelElementId = options.labelElementId || null; // Optional
+    
+    // Component configuration
     this.label = options.label || "Seleccionar imagen";
     this.acceptedFormats = options.acceptedFormats || ["jpg", "jpeg", "png"];
     this.maxSizeMB = options.maxSizeMB || 2;
-    this.url = options.url || "/api/upload";
+    this.baseURL = options.baseURL || "";
+    this.url = this.baseURL + "/" + options.url || "/api/upload";
     this.fileKey = options.fileKey || "file";
     this.extraParams = options.extraParams || {};
     this.jwt = options.jwt || "";
+    
+    // Callbacks
     this.onSuccess = options.onSuccess || ((response) => console.log("Upload success:", response));
     this.onError = options.onError || ((error) => console.error("Upload error:", error));
+    this.onViewClick = options.onViewClick || (() => {
+      e.preventDefault();
+    });
     
     this.file = null;
     this.isLoading = false;
@@ -19,23 +36,40 @@ class FileUpload {
   }
   
   initElements() {
-    this.container = document.getElementById('fileUploadContainer');
-    this.fileInput = document.getElementById('imageFile');
-    this.uploadButton = document.getElementById('uploadButton');
-    this.errorMessage = document.getElementById('errorMessage');
-    this.successMessage = document.getElementById('successMessage');
-    this.labelElement = this.container.querySelector('.form-label');
+    // Get all DOM elements by configurable IDs
+    this.container = document.getElementById(this.containerId);
+    this.fileInput = document.getElementById(this.fileInputId);
+    this.uploadButton = document.getElementById(this.uploadButtonId);
+    this.viewButton = document.getElementById(this.viewButtonId);
+    this.errorMessage = document.getElementById(this.errorMessageId);
+    this.successMessage = document.getElementById(this.successMessageId);
+    this.helpText = document.getElementById(this.helpTextId);
+    
+    // Get label element (either by ID or as first label in container)
+    this.labelElement = this.labelElementId 
+      ? document.getElementById(this.labelElementId)
+      : this.container.querySelector('label');
     
     // Update initial values
-    this.labelElement.textContent = this.label;
+    if (this.labelElement) {
+      this.labelElement.textContent = this.label;
+    }
+    
     this.fileInput.accept = this.acceptedFormats.map(f => `.${f}`).join(',');
-    this.container.querySelector('.text-muted').textContent = 
+    this.helpText.textContent = 
       `Formatos aceptados: ${this.acceptedFormats.join(", ").toUpperCase()} (Máx. ${this.maxSizeMB}MB)`;
   }
   
   setupEventListeners() {
     this.fileInput.addEventListener('change', this.handleFileChange.bind(this));
     this.uploadButton.addEventListener('click', this.uploadFile.bind(this));
+    this.viewButton.addEventListener('click', () => {
+      if (this.file) {
+        this.onViewClick();
+      } else {
+        this.showError("No hay imagen seleccionada para visualizar");
+      }
+    });
   }
   
   handleFileChange(event) {
@@ -84,11 +118,13 @@ class FileUpload {
         headers: {
           "Authorization": `Bearer ${this.jwt}`
         },
-        body: formData
+        body: formData, 
+        mode: "cors", // Explicitamente habilitar CORS
+        credentials: "include" // Solo si necesitas cookies
       });
 
       const data = await response.json();
-
+      console.log(data)
       if (!response.ok) {
         throw new Error(data.message || "Error al subir el archivo");
       }
@@ -120,19 +156,20 @@ class FileUpload {
   }
   
   updateUI() {
-    // Update button state
+    // Update buttons state
     this.uploadButton.disabled = this.isLoading || !this.file;
+    this.viewButton.disabled = this.isLoading || !this.file;
     
-    // Update button text and icon
-    const icon = this.uploadButton.querySelector('i');
-    const textNode = this.uploadButton.childNodes[2]; // Text node after icon
+    // Update upload button text and icon
+    const uploadIcon = this.uploadButton.querySelector('i');
+    const uploadText = this.uploadButton.childNodes[2];
     
     if (this.isLoading) {
-      icon.className = "fas fa-spinner spinner";
-      textNode.nodeValue = " Subiendo...";
+      uploadIcon.className = "fa fa-spinner spinner";
+      uploadText.nodeValue = " Subiendo...";
     } else {
-      icon.className = "fas fa-upload";
-      textNode.nodeValue = " Subir";
+      uploadIcon.className = "fa fa-cloud-upload";
+      uploadText.nodeValue = " Subir";
     }
     
     // Update input state

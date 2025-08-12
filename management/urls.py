@@ -1,7 +1,7 @@
 from django.urls import path
-from .views.index import home
-from .views.locations import locations,locations_provinces , locations_districts, departments, departments_edit, departments_delete, provinces_add, provinces_edit, provinces_delete, districts_add, districts_edit, districts_delete
-from .views.enterprises import enterprises, enterprises_add
+from .views.index_views import home
+from .views.locations_views import locations,locations_provinces , locations_districts, departments, departments_edit, departments_delete, provinces_add, provinces_edit, provinces_delete, districts_add, districts_edit, districts_delete
+from .views.enterprises_views import enterprises_list, create_enterprise, update_enterprise
 
 urlpatterns = [
   path('', home, name='managment_index'),
@@ -22,6 +22,9 @@ urlpatterns = [
   path('locations/<str:department_id>/provinces/<str:province_id>/districts/<str:district_id>/edit', districts_edit, name='location_districts'),
   path('locations/<str:department_id>/provinces/<str:province_id>/districts/<str:district_id>/delete', districts_delete, name='districts_delete'),
   # enterprises
-  path('enterprises/', enterprises, name='enterprises'),
-  path('enterprises/add', enterprises_add, name='enterprises_add'),
+  path('enterprises/', enterprises_list, name='enterprises_list'),
+  path('enterprises/add', create_enterprise, name='enterprises_add'),
+  path('enterprises/<str:enterprise_id>', update_enterprise, name='enterprise_detail'),
+  path('enterprises/<str:enterprise_id>/edit', update_enterprise, name='update_enterprise'),
+  path('enterprises/<str:enterprise_id>/delete', update_enterprise, name='delete_enterprise'),
 ]

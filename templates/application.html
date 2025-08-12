@@ -10,7 +10,12 @@
   <link rel="stylesheet" href="{% static 'dist/app.min.css' %}">
   <!-- Estilos personalizados -->
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-  
+  <script>
+    const URLS = {
+      BASE: "{{ BASE_URL_FROM_ENV }}",
+      FILES: "{{ FILES_URL_FROM_ENV }}",
+    }
+  </script>
   {% block extra_css %}{% endblock %}
 </head>
 

@@ -2,7 +2,7 @@ from bson import ObjectId
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
-from management.models import Location 
+from management.models.location import Location 
 from mongoengine.errors import DoesNotExist
 from management.forms.locations_forms import LocationForm
 
