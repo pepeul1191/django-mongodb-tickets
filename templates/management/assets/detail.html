@@ -1,0 +1,72 @@
+{% extends 'application.html' %}
+{% load main_filters %} 
+{% block extra_css %}
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+  <div class="container-fluid py-4">
+    <h3 class="mb-4">
+      <a class="return-nav" href="/management/assets/"><i class="fa fa-cube me-2"></i>Gestión de Activos</a>
+      / {% if editing %}Editar{% else %}Nuevo{% endif %} Activo
+    </h3>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">
+          <i class="fa fa-info-circle me-2"></i>
+          Datos del Activo
+        </h6>
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data" action="{% if editing %}/management/assets/{{asset.id}}/edit {% else %}/management/assets/add{% endif %}">
+          {% csrf_token %}
+          
+          <input type="hidden" value="{{ asset.id }}" name="id">
+          
+          <div class="row mb-3">
+            <div class="col-md-2">
+              <label for="{{ form.code.id_for_label }}" class="form-label">{{ form.code.label }}</label>
+              {{ form.code }}
+            </div>
+            <div class="col-md-7">
+              <label for="{{ form.business_name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+              {{ form.name }}
+              {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-3 justify-content-end btn-row">
+              <a href="/management/assets" class="btn btn-light me-3">
+                <i class="fa fa-times me-2"></i>Cancelar
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save me-2"></i>
+                {% if editing %}Actualizar{% else %}Guardar{% endif %}
+              </button>
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label for="description" class="form-label">Descripción del Activo</label>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

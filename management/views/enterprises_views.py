@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from mongoengine.queryset import Q # Usa esta importación
-from management.forms.enterprise_forms import EnterpriseForm
+from management.forms.enterprises_forms import EnterpriseForm
 from mongoengine.errors import DoesNotExist
 from management.models.enterprise import Enterprise
 from datetime import datetime
@@ -96,7 +96,9 @@ def delete_enterprise(request, enterprise_id):
     return redirect('enterprises_list')
 
 def create_enterprise(request):
-  context = {}
+  context = {
+    "nav_link": nav_link
+  }
   
   if request.method == 'POST':
     form = EnterpriseForm(request.POST)

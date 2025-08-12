@@ -4,6 +4,7 @@ from .views.locations_views import locations,locations_provinces , locations_dis
 from .views.enterprises_views import enterprises_list, create_enterprise, update_enterprise, delete_enterprise
 from .views.roles_views import roles_list, create_role, update_role, delete_role
 from .views.tags_views import tags_list, create_tag, update_tag, delete_tag
+from .views.assets_views import assets_list, create_asset, update_asset, delete_asset
 
 urlpatterns = [
   path('', home, name='managment_index'),
@@ -35,10 +36,16 @@ urlpatterns = [
   path('roles/<str:role_id>', update_role, name='role_detail'),
   path('roles/<str:role_id>/edit', update_role, name='update_role'),
   path('roles/<str:role_id>/delete', delete_role, name='delete_role'),
-    # tags
+  # tags
   path('tags/', tags_list, name='tags_list'),
   path('tags/add', create_tag, name='tags_add'),
   path('tags/<str:tag_id>', update_tag, name='tag_detail'),
   path('tags/<str:tag_id>/edit', update_tag, name='update_tag'),
   path('tags/<str:tag_id>/delete', delete_tag, name='delete_tag'),
+  # assets
+  path('assets/', assets_list, name='assets_list'),
+  path('assets/add', create_asset, name='assets_add'),
+  path('assets/<str:asset_id>', update_asset, name='asset_detail'),
+  path('assets/<str:asset_id>/edit', update_asset, name='update_asset'),
+  path('assets/<str:asset_id>/delete', delete_asset, name='delete_asset'),
 ]

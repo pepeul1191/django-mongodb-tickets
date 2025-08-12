@@ -33,7 +33,6 @@ class Employee {
   - created: DateTime
   - updated: DateTime
   - userId: ObjectId
-  - enterpriseId: ObjectId
 }
 
 Employee "1" --* "n" Enterprise : pertenece
@@ -48,7 +47,9 @@ class Priority {
 class Asset {
   - _id: ObjectId
   - name: String
+  - code: String
   - description: String
+  - documents: Array[DocumentEmbedded]
   - created: DateTime
   - updated: DateTime
 }
@@ -78,7 +79,7 @@ class Issue {
   - visorsIds: Array[ObjectIds]
   - editorsIds: Array[ObjectIds]
   - histories: Array[ObjectIds]
-  - documents: Array[Document]
+  - documents: Array[DocumentEmbedded]
   - reporterId: ObjectId
   - reportered: DateTime
   - created: DateTime
@@ -89,12 +90,12 @@ class History {
   - _id: ObjectId
   - description: String
   - reportered: ObjectId
-  - documents: Array[Document]
+  - documents: Array[DocumentEmbedded]
   - created: DateTime
   - updated: DateTim
 }
 
-class Document <<embedded>>{
+class DocumentEmbedded <<embedded>>{
   - _id: ObjectId
   - name: String
   - description: String
@@ -129,7 +130,7 @@ class User {
   + activationKey: String
   + created: Datetime
   + updated: Datetime
-  + rolesIds: Array<ObjectId>
+  + rolesIds: Array[ObjectId]
 }
 
 class Roles {
@@ -148,8 +149,8 @@ Issue "n" *-- "1" Priority : tiene
 Issue "n" o-- "n" Asset : tiene
 Issue "n" o-- "n" Tag : tiene
 Issue "1" o-- "n" History : tiene
-Issue "1" o-- "n" Document : tiene
-History "1" o-- "n" Document : tiene
+Issue "1" o-- "n" DocumentEmbedded : tiene
+History "1" o-- "n" DocumentEmbedded : tiene
 History "1" *-- "n" Employee : genera
 Track "1" *-- "n" Log : registra
 Issue "1" --* "n" Track : registra

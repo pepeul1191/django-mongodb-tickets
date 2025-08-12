@@ -89,7 +89,9 @@ def delete_tag(request, tag_id):
     return redirect('tags_list')
 
 def create_tag(request):
-  context = {}
+  context = {
+    "nav_link": nav_link
+  }
   
   if request.method == 'POST':
     form = TagForm(request.POST)
@@ -144,9 +146,6 @@ def update_tag(request, tag_id):
   if request.method == 'POST':
     # 2. Para POST, inicializar el formulario con los datos enviados
     form = TagForm(request.POST)
-    print("1 +++++++++++++++++++++++++++++++++++")
-    print(form)
-    print("2 +++++++++++++++++++++++++++++++++++")
     if form.is_valid():
       # 3. Acceder a los datos limpios y actualizar el objeto manualmente
       cleaned_data = form.cleaned_data
