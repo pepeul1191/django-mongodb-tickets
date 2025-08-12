@@ -87,10 +87,10 @@
         </h6>
       </div>
       <div class="card-body">
-        <form method="POST" action="/management/enterprises/add" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" action="{% if editing %}/management/enterprises/{{enterprise.id}}/edit {% else %}/management/enterprises/add{% endif %}">
           {% csrf_token %}
           
-          {{ form.id }}
+          <input type="hidden" value="{{ enterprise.id }}" name="id">
           {{ form.image_url }}
           {{ form.location_id }}
           
@@ -103,8 +103,8 @@
               {% endif %}
             </div>
             <div class="col-md-6">
-              <label for="{{ form.tradeName.id_for_label }}" class="form-label">{{ form.tradeName.label }}</label>
-              {{ form.tradeName }}
+              <label for="{{ form.trade_name.id_for_label }}" class="form-label">{{ form.trade_name.label }}</label>
+              {{ form.trade_name }}
             </div>
           </div>
           

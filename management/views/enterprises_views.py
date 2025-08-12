@@ -75,6 +75,23 @@ def enterprises_list(request):
 
   return render(request, 'management/enterprises/list.html', context)
 
+def delete_enterprise(request, enterprise_id):
+  if request.method == 'GET':
+    try:
+      # Usamos el ObjectId para encontrar el documento
+      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
+      enterprise.delete()
+      messages.success(request, f'La empresa "{enterprise.business_name}" ha sido eliminada correctamente.')
+    except Enterprise.DoesNotExist:
+      messages.error(request, 'La empresa no fue encontrada.')
+    except Exception as e:
+      messages.error(request, f'Ocurrió un error al intentar eliminar la empresa: {e}')
+    
+    return redirect('enterprises_list')
+  else:
+    # Si la solicitud no es POST, puedes redirigir o mostrar una página de confirmación
+    # Para este ejemplo, simplemente redirigimos de vuelta a la lista
+    return redirect('enterprises_list')
 
 def enterprises_add(request):
   context = {
@@ -179,59 +196,67 @@ def create_enterprise(request):
   return render(request, 'management/enterprises/detail.html', context)
 
 def update_enterprise(request, enterprise_id):
-  context = {
-    'editing': True,
-  }
-  
+  """
+  Vista para editar una empresa existente usando un forms.Form.
+  Maneja la carga del formulario con datos iniciales (GET) y
+  el guardado manual de los datos (POST).
+  """
   try:
-    # Use get_object_or_404 for cleaner error handling
-    enterprise = get_object_or_404(Enterprise, pk=ObjectId(enterprise_id))
+    # 1. Obtener la instancia de la empresa de la base de datos
+    enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
+  except Enterprise.DoesNotExist:
+    messages.error(request, 'La empresa no fue encontrada.')
+    return redirect('enterprises_list')
   except Exception as e:
-    messages.error(request, f'Error al buscar la empresa: {str(e)}')
+    messages.error(request, f'Error al buscar la empresa: {e}')
     return redirect('enterprises_list')
 
   if request.method == 'POST':
-    # Instantiate the form with POST data and the existing instance
-    form = EnterpriseForm(request.POST, instance=enterprise)
-    
+    # 2. Para POST, inicializar el formulario con los datos enviados
+    form = EnterpriseForm(request.POST)
     if form.is_valid():
-      try:
-        # Save the form data to the existing enterprise object
-        form.save()
-        
-        # Handle the image_url field separately if needed
-        # Your form logic might handle this better, but this matches your original code
-        if 'image_url' in request.POST and request.POST['image_url']:
-          enterprise.image_url = request.POST['image_url']
-        else:
-          # Consider not overwriting if no new image is provided
-          pass 
-
-        enterprise.save() # Save again to persist image_url change
-        
-        messages.success(request, 'Empresa actualizada exitosamente.')
-        # Redirect to the detail page for the updated enterprise
-        return redirect('enterprise_detail', enterprise_id=str(enterprise.id))
+      # 3. Acceder a los datos limpios y actualizar el objeto manualmente
+      cleaned_data = form.cleaned_data
       
-      except Exception as e:
-        messages.error(request, f'Error al actualizar en MongoDB: {str(e)}')
-        context['form'] = form
-        context['enterprise'] = enterprise
-        return render(request, 'management/enterprises/detail.html', context, status=500)
+      # Mapear los campos del formulario a los del modelo
+      enterprise.business_name = cleaned_data['business_name']
+      enterprise.trade_name = cleaned_data['trade_name']
+      enterprise.tax_id = cleaned_data['tax_id']
+      enterprise.phone = cleaned_data['phone']
+      enterprise.website = cleaned_data['website']
+      enterprise.email = cleaned_data['email']
+      enterprise.location_id = ObjectId(cleaned_data['location_id'])
+      enterprise.fiscal_address = cleaned_data['fiscal_address']
+      enterprise.image_url = cleaned_data['image_url']
+      
+      # 4. Guardar los cambios en la base de datos
+      enterprise.save() 
+      
+      messages.success(request, f'La empresa "{enterprise.business_name}" ha sido actualizada correctamente.')
     else:
-      # If the form is not valid, re-render the page with errors
-      for field, errors in form.errors.items():
-        for error in errors:
-          messages.error(request, f"{form.fields[field].label}: {error}")
-      
-      context['form'] = form
-      context['enterprise'] = enterprise
-      return render(request, 'management/enterprises/detail.html', context, status=400)
-  
-  # If it's a GET request, populate the form with the existing enterprise data
+      messages.error(request, 'Por favor, corrige los errores en el formulario.')
   else:
-    # Use `instance=enterprise` to automatically populate the form fields
-    form = EnterpriseForm(instance=enterprise)
-    context['form'] = form
-    context['enterprise'] = enterprise
-    return render(request, 'management/enterprises/detail.html', context)
+    # 5. Para GET, crear un diccionario con los datos del objeto
+    #    y pasar el diccionario al parámetro 'initial'
+    initial_data = {
+      'id': str(enterprise.id),
+      'business_name': enterprise.business_name,
+      'trade_name': enterprise.trade_name,
+      'tax_id': enterprise.tax_id,
+      'phone': enterprise.phone,
+      'website': enterprise.website,
+      'email': enterprise.email,
+      'location_id': str(enterprise.location_id),
+      'fiscal_address': enterprise.fiscal_address,
+      'image_url': enterprise.image_url,
+    }
+    form = EnterpriseForm(initial=initial_data)
+
+  context = {
+    'editing': True,
+    'form': form,
+    'enterprise': enterprise,
+    'page_title': 'Editar Empresa',
+    'nav_link': nav_link, 
+  }
+  return render(request, 'management/enterprises/detail.html', context)

@@ -25,7 +25,7 @@ class Enterprise(Document):
   phone = StringField(max_length=20)
   email = StringField(required=True, regex=r'^[^@]+@[^@]+\.[^@]+')
   website = StringField(regex=r'^https?://[^\s/$.?#].[^\s]*$')
-  image_url = StringField()
+  image_url = StringField(default='https://placehold.co/600x400/E0E0E0/333333?text=Sin+Imagen')
   created = DateTimeField(default=datetime.utcnow)
   updated = DateTimeField(default=datetime.utcnow)
 

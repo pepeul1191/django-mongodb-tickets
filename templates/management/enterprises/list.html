@@ -4,7 +4,7 @@
 <main class="main-content">
   <div class="container-fluid py-4">
     <h3 class="mb-4">
-      <a class="return-nav" href="{% url 'enterprises_list' %}"><i class="fa fa-industry me-2"></i>Gestión de Empresas</a>
+      <i class="fa fa-industry me-2"></i>Gestión de Empresas
     </h3>
 
     {% if messages %}
@@ -33,19 +33,18 @@
                 <input type="text" id="nombre" name="name" class="form-control" placeholder="Buscar..." value="{{ search_query }}">
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="ruc" class="form-label">Buscar por RUC</label>
               <div class="input-group">
                 <input type="text" id="ruc" name="tax_id" class="form-control" placeholder="Buscar por RUC..." value="{{ tax_id_query }}">
               </div>
             </div>
             <div class="col-md-3">
-              
               <div class="input-group">
                 <button type="submit" class="btn btn-primary">
                   <i class="fa fa-search"></i> Buscar
                 </button>
-                <a href="{% url 'enterprises_list' %}" class="btn btn-secondary">
+                <a href="{% url 'enterprises_list' %}" class="btn btn-secondary" style="margin-left: 10px;">
                   <i class="fa fa-refresh"></i> Limpiar
                 </a>
               </div>
@@ -101,9 +100,6 @@
                   <td>{{ enterprise.trade_name }}</td>
                   <td>{{ enterprise.tax_id }}</td>
                   <td class="text-end">
-                    <a href="{% url 'enterprise_detail' enterprise_id=enterprise.id %}" class="btn btn-info me-1">
-                      <i class="fa fa-eye"></i> Ver
-                    </a>
                     <a href="{% url 'update_enterprise' enterprise_id=enterprise.id %}" class="btn btn-secondary me-1">
                       <i class="fa fa-edit"></i> Editar
                     </a>
