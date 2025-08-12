@@ -76,6 +76,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'main.helpers.custom_urls',
             ],
+            'libraries': {
+                'main_filters': 'main.filters',  # Registra tus nuevos filters
+            },
         },
     },
 ]

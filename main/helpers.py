@@ -5,3 +5,4 @@ def custom_urls(request):
     'BASE_URL_FROM_ENV': os.getenv('BASE_URL'),
     'FILES_URL_FROM_ENV': os.getenv('FILES_URL'),
   }
+

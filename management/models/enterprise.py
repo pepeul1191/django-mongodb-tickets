@@ -1,10 +1,12 @@
 from mongoengine import Document, ObjectIdField, StringField, DateTimeField
 from datetime import datetime
 from bson import ObjectId
+import pytz
+from pytz import timezone
 
 class Enterprise(Document):
   """
-  Modelo para representar empresas en la base de datos MongoDB
+  Modelo para representar empresas en MongoDB con soporte para UTC-5 (Perú)
   """
   
   meta = {
@@ -13,13 +15,14 @@ class Enterprise(Document):
       'tax_id',
       'email',
       'location_id'
-    ]
+    ],
+    'ordering': ['-created']
   }
 
   id = ObjectIdField(primary_key=True, default=lambda: ObjectId())
-  business_name = StringField(required=True, max_length=100)  # Razón social
-  trade_name = StringField(max_length=100)  # Nombre comercial
-  tax_id = StringField(required=True, regex=r'^\d{11}$')  # RUC peruano
+  business_name = StringField(required=True, max_length=100)
+  trade_name = StringField(max_length=100)
+  tax_id = StringField(required=True, regex=r'^\d{11}$')
   fiscal_address = StringField(required=True, max_length=200)
   location_id = ObjectIdField(required=True)
   phone = StringField(max_length=20)
@@ -30,24 +33,13 @@ class Enterprise(Document):
   updated = DateTimeField(default=datetime.utcnow)
 
   def clean(self):
-    """Actualiza automáticamente la fecha de modificación"""
     self.updated = datetime.utcnow()
 
   def __str__(self):
-    """Representación legible del objeto"""
-    trade_name_info = f" ({self.trade_name})" if self.trade_name else ""
-    location_info = f" - Loc: {str(self.location_id)[:8]}..." if self.location_id else ""
-    contact_info = f" | ✉ {self.email}" if self.email else ""
-    phone_info = f" | ☎ {self.phone}" if self.phone else ""
-    
-    return (
-      f"{self.business_name}{trade_name_info} "
-      f"[RUC: {self.trade_name}]{location_info}"
-      f"{contact_info}{phone_info}"
-    )
+    trade_name_display = f" ({self.trade_name})" if self.trade_name else ""
+    return f"{self.business_name}{trade_name_display} | RUC: {self.tax_id}"
 
   def to_dict(self):
-    """Convierte el modelo a diccionario para APIs"""
     return {
       'id': str(self.id),
       'businessName': self.business_name,
@@ -59,6 +51,14 @@ class Enterprise(Document):
       'email': self.email,
       'website': self.website,
       'imageUrl': self.image_url,
-      'created': self.created.isoformat(),
-      'updated': self.updated.isoformat()
+      'created': self.created,
+      'updated': self.updated
     }
+
+  @classmethod
+  def get_by_id(cls, enterprise_id):
+    try:
+      return cls.objects.get(id=ObjectId(enterprise_id))
+    except (cls.DoesNotExist, Exception):
+      return None
+

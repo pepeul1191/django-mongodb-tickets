@@ -9,6 +9,8 @@ from management.models.enterprise import Enterprise
 from datetime import datetime
 import math
 
+from management.models.location import Location
+
 nav_link = 'enterprises'
 
 def enterprises_list(request):
@@ -204,6 +206,7 @@ def update_enterprise(request, enterprise_id):
   try:
     # 1. Obtener la instancia de la empresa de la base de datos
     enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
+    location_data = Location.get_district_with_hierarchy(enterprise.location_id)
   except Enterprise.DoesNotExist:
     messages.error(request, 'La empresa no fue encontrada.')
     return redirect('enterprises_list')
@@ -251,12 +254,12 @@ def update_enterprise(request, enterprise_id):
       'image_url': enterprise.image_url,
     }
     form = EnterpriseForm(initial=initial_data)
-
   context = {
     'editing': True,
     'form': form,
     'enterprise': enterprise,
     'page_title': 'Editar Empresa',
     'nav_link': nav_link, 
+    'location': location_data
   }
   return render(request, 'management/enterprises/detail.html', context)

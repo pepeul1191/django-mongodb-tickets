@@ -1,10 +1,21 @@
 {% extends 'application.html' %}
-
+{% load main_filters %} 
 {% block extra_css %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
+  const loadImageToHref = () => {
+    var input = document.getElementById("imageUrl");
+    if(input.value != ''){
+      document.getElementById("viewImageButton").disabled = false;
+      document.getElementById("viewImageButton").addEventListener("click", () => {
+        const url = `${URLS.FILES}/public${input.value}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+      })
+    }
+  }
+
   // Initialize the component with custom options
   document.addEventListener('DOMContentLoaded', () => {
     // Inicialización
@@ -43,7 +54,7 @@
           // Abrir en nueva pestaña con seguridad
           var imageUrl = document.getElementById("imageUrl").value;
           if(imageUrl == ''){
-            alert("No hay imagen para mostrar");
+            fileUpload.showError("No hay imagen seleccionada para visualizar");
           }else{
             const url = `${URLS.FILES}/public${imageUrl}`;
             window.open(url, '_blank', 'noopener,noreferrer');
@@ -58,6 +69,8 @@
           document.getElementById("imageUrl").value = `${response.path}`;
         },
       });
+    
+    loadImageToHref();
   });
 </script>
 {% endblock %}
@@ -140,7 +153,7 @@
           <div class="row mb-3">
             <div class="col-md-4 autocomplete-wrapper" style="overflow-x: auto; white-space: nowrap;">
               <label class="form-label">Locación: Distrito / Provincia / Departamento</label>
-              <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." autocomplete="off">
+              <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." autocomplete="off" value="{{ location.full_name|default:'' }}">
               <div id="suggestionsContainer" class="suggestion-list"></div>
             </div>
             <div class="col-md-8">
@@ -155,11 +168,11 @@
           <div class="row mb-3">
             <div class="col-md-2">
               <label for="created" class="form-label">Creado</label>
-              <input type="datetime-local" class="form-control" id="created" name="created" disabled>
+              <input type="datetime-local" class="form-control" id="created" name="created" value="{{ enterprise.created|to_datetime_local |default:''}}" disabled>
             </div>
             <div class="col-md-2">
               <label for="updated" class="form-label">Actualizado</label>
-              <input type="datetime-local" class="form-control" id="updated" name="updated" disabled>
+              <input type="datetime-local" class="form-control" id="updated" name="updated" disabled value="{{ enterprise.updated|to_datetime_local |default:''}}">
             </div>
             <div class="col-md-6">
               <div class="mb-3" id="fileUploadContainer">

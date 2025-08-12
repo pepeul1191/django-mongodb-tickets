@@ -64,11 +64,12 @@ export class FileUpload {
     this.fileInput.addEventListener('change', this.handleFileChange.bind(this));
     this.uploadButton.addEventListener('click', this.uploadFile.bind(this));
     this.viewButton.addEventListener('click', () => {
-      if (this.file) {
+      /*if (this.file) {
         this.onViewClick();
       } else {
         this.showError("No hay imagen seleccionada para visualizar");
-      }
+      }*/
+      this.onViewClick();
     });
   }
   
