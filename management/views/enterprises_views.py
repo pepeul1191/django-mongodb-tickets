@@ -230,19 +230,19 @@ def assets_enterprise(request, enterprise_id):
           tmp.append(asset_id)
         enterprise.assets_ids = list(tmp)
         enterprise.save()
-      return JsonResponse({'message': f'Se ha asociado a la empresa {enterprise.business_name} lo inventarios', 'status': 'sucess'}, status=200)
+      return JsonResponse({'message': f'Activos asociados a {enterprise.business_name}', 'status': 'success'}, status=200)
     except Exception as e:
-      return JsonResponse({'error': str(e), 'message': f'Ocurrió un error al asociar los inventarios a la empresa {enterprise.business_name}'}, status=500)
-    
+      return JsonResponse({'error': str(e), 'message': f'Error al asociar activos'}, status=500)
+  
   else:
-    # Obtener parámetros de la URL
+    # Parámetros de URL
     page_number = request.GET.get('page', 1)
     per_page = request.GET.get('per_page', 10)
     search_query = request.GET.get('name', '')
     code_query = request.GET.get('code', '') 
-    association_status = request.GET.get('association_status', 2) 
+    association_status = request.GET.get('association_status', '2') 
 
-    # Validar y convertir a enteros
+    # Validación
     try:
       page_number = int(page_number)
       per_page = int(per_page)
@@ -250,58 +250,57 @@ def assets_enterprise(request, enterprise_id):
       page_number = 1
       per_page = 10
     
-    # Validar que no sean valores negativos o cero
-    if page_number < 1:
-      page_number = 1
-    if per_page < 1:
-      per_page = 10
+    if page_number < 1: page_number = 1
+    if per_page < 1: per_page = 10
 
-    # Consultar y filtrar las activos
+    # Obtener IDs de activos asociados
+    try:
+      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
+      enterprise_assets_ids = enterprise.assets_ids or []
+    except Enterprise.DoesNotExist:
+      enterprise_assets_ids = []
+
+    # Consulta base
     assets = Asset.objects.all()
-    # Construir una lista de consultas Q para combinar
-    query_list = []
+    
+    # Filtros de búsqueda
     if search_query:
-      query_list.append(Q(name__icontains=search_query) | Q(description__icontains=search_query))
-
-    if query_list:
-      # Combinar todas las consultas con AND
-      combined_query = query_list[0]
-      for q in query_list[1:]:
-        combined_query &= q
-      assets = assets.filter(combined_query)
-
+      assets = assets.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
     if code_query:
-      query_list.append(Q(code__icontains=code_query))
+      assets = assets.filter(code__icontains=code_query)
 
-    # Aplicar filtros si hay consultas
-    if query_list:
-      # Combinar todas las consultas con AND
-      combined_query = query_list[0]
-      for q in query_list[1:]:
-        combined_query &= q
-      assets = assets.filter(combined_query)
+    # Filtro por asociación (CORRECCIÓN PRINCIPAL)
+    if association_status == '1':  # Solo asociados
+      assets = assets.filter(id__in=enterprise_assets_ids)
+    elif association_status == '0':  # Solo no asociados
+      assets = assets.filter(id__nin=enterprise_assets_ids)  # Usar __nin en lugar de exclude()
 
-    # Lógica de paginación
-    total_assets = assets.count()
+    # Preparar datos para template
+    assets_list = []
+    for asset in assets:
+      assets_list.append({
+        'id': str(asset.id),
+        'code': asset.code,
+        'name': asset.name,
+        'associated': str(asset.id) in [str(aid) for aid in enterprise_assets_ids]
+      })
+
+    # Paginación
+    total_assets = len(assets_list)
     total_pages = math.ceil(total_assets / per_page)
-    
-    # Calcular el offset para la consulta (skip)
     offset = (page_number - 1) * per_page
-    
-    # Obtener las empresas para la página actual
-    paginated_assets = assets.skip(offset).limit(per_page)
+    paginated_assets = assets_list[offset:offset + per_page]
 
     context = {
-      'nav_link': nav_link,
-      'page_title': 'Gestión de Activos',
       'assets': paginated_assets,
       'search_query': search_query,
       'code_query': code_query,
       'page': page_number,
       'per_page': per_page,
-      'association_status': association_status,
+      'association_status': int(association_status),
       'total_assets': total_assets,
       'total_pages': total_pages,
+      'nav_link': nav_link,
       'start_record': offset + 1,
       'end_record': min(offset + per_page, total_assets),
       'enterprise_id': enterprise_id,
