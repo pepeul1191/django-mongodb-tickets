@@ -1,0 +1,143 @@
+{% extends 'application.html' %}
+{% load main_filters %} 
+{% block extra_css %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const loadImageToHref = () => {
+    var input = document.getElementById("imageUrl");
+    if(input.value != ''){
+      document.getElementById("viewImageButton").disabled = false;
+      document.getElementById("viewImageButton").addEventListener("click", () => {
+        const url = `${URLS.FILES}/public${input.value}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+      })
+    }
+  }
+
+  // Initialize the component with custom options
+  document.addEventListener('DOMContentLoaded', () => {
+    // Inicialización
+
+    const fileUpload = new FileUpload({
+      // Configurable DOM element IDs
+      containerId: "fileUploadContainer",
+      fileInputId: "imageFile",
+      uploadButtonId: "uploadButton",
+      viewButtonId: "viewImageButton",
+      errorMessageId: "errorMessage",
+      successMessageId: "successMessage",
+      helpTextId: "helpText",
+      labelElementId: null, // Auto-detect if null
+      baseURL: URLS.FILES,
+      url: 'api/v1/public/enterprises',
+      acceptedFormats: ["jpg", "jpeg", "png", "docx", "doc", "pptx", "ppt", "xlsx", "xls", "pdf", "mp4"],
+      maxSizeMB: 40,
+      
+      // Button configuration
+      onViewClick: (file) => {
+        // Obtener la URL del atributo href
+        // Abrir en nueva pestaña con seguridad
+        var imageUrl = document.getElementById("imageUrl").value;
+        if(imageUrl == ''){
+          fileUpload.showError("No hay imagen seleccionada para visualizar");
+        }else{
+          const url = `${URLS.FILES}/public${imageUrl}`;
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+      },
+      
+      // Other customizable options
+      // label: "Subir archivo",
+      // acceptedFormats: ["jpg", "png"],
+      // maxSizeMB: 5,
+      onSuccess: (response) => {
+        document.getElementById("imageUrl").value = `${response.path}`;
+        document.getElementById("size").value = `${response.size}`;
+        document.getElementById("mime").value = `${response.mime_type}`;
+      },
+    });
+  
+    loadImageToHref();
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+  <div class="container-fluid py-4">
+    <h3 class="mb-4">
+      <a class="return-nav" href="/management/assets/"><i class="fa fa-cube me-2"></i>Gestión de Activos</a> / 
+      <a class="return-nav" href="/management/assets/{{ asset_id }}">Editar Activo</a> / Agregar Documento
+    </h3>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">
+          <i class="fa fa-info-circle me-2"></i>
+          Datos del Documento
+        </h6>
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data" action="/management/assets/{{asset_id}}/document">
+          {% csrf_token %}
+          
+          <input type="hidden" value="{{ asset_id}}" name="asset_id">
+          {{ form.image_url }}
+          {{ form.mime }}
+          {{ form.size }}
+          
+          <div class="row mb-3">
+            <div class="col-md-5">
+              <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+              {{ form.name }}
+              {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <div class="mb-3" id="fileUploadContainer">
+                <label for="imageFile" class="form-label">Seleccionar imagen</label>
+                <div class="input-group">
+                  <input type="file" class="form-control" id="imageFile" accept=".jpg,.jpeg,.png,.xls,.doc,.ppt,.xlsx,.docx,.pptx,mp4.">
+                  <button class="btn btn-secondary" type="button" id="uploadButton">
+                    <i class="fa fa-cloud-upload"></i> Subir
+                  </button>
+                  <button class="btn btn-info" type="button" id="viewImageButton">
+                    <i class="fa fa-eye"></i> Ver
+                  </button>
+                </div>
+                <small class="text-muted" id="helpText">Formatos aceptados: JPG, JPEG, PNG, PDF, DOC, XLS, PPT (Máx. 2MB)</small>
+                <div id="errorMessage" class="text-danger mt-2"></div>
+                <div id="successMessage" class="text-success mt-2"></div>
+              </div>
+            </div>
+          </div>       
+
+          <div class="row mt-3">  <!-- mt-3 para margen superior -->
+            <div class="col-md-12 d-flex justify-content-end">  <!-- Flexbox + alineación derecha -->
+              <a href="/management/enterprises" class="btn btn-light me-3">
+                <i class="fa fa-times me-2"></i>Cancelar
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save me-2"></i>
+                {% if editing %}Actualizar{% else %}Guardar{% endif %}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

@@ -4,11 +4,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from mongoengine.queryset import Q # Usa esta importación
 from management.forms.assets_forms import AssetForm
+from management.forms.documents_forms import AssetDocumentForm
 from mongoengine.errors import DoesNotExist
 from management.models.asset import Asset
 from datetime import datetime
 import math
 
+from management.models.document_embedded import DocumentEmbedded
 from management.models.location import Location
 
 nav_link = 'assets'
@@ -197,3 +199,55 @@ def update_asset(request, asset_id):
     'nav_link': nav_link, 
   }
   return render(request, 'management/assets/detail.html', context)
+
+def asset_add_document(request, asset_id):
+  context = {
+    "nav_link": nav_link,
+    "asset_id": asset_id
+  }
+
+  if request.method == 'POST':
+    form = AssetDocumentForm(request.POST)
+    
+    if form.is_valid():
+      try:
+        
+        # 1. Obtener la instancia de la empresa de la base de datos
+        asset = Asset.objects.get(id=ObjectId(asset_id))
+
+        # Create a new enterprise with form data
+        document = DocumentEmbedded(
+          name=form.cleaned_data['name'],
+          size=form.cleaned_data['size'],
+          mime=form.cleaned_data['mime'],
+          url=request.POST.get('image_url', '')  # File upload field
+        )
+
+        asset.documents.append(document)
+        asset.save()
+
+        # Success message and redirect
+        messages.success(request, 'Documento agregado exitosamente!')
+        return redirect('update_asset', asset_id=asset_id)
+      except Asset.DoesNotExist:
+        messages.error(request, 'La empresa no fue encontrada.')
+        return redirect('assets_list')  
+      except Exception as e:
+        messages.error(request, f'Error al crear en MongoDB: {str(e)}')
+        context['form'] = form
+        return render(request, 'management/assets/documents_detail.html', context, status=500)
+    else:
+      # Show specific form errors
+      for field, errors in form.errors.items():
+        for error in errors:
+          messages.error(request, f"{form.fields[field].label}: {error}")
+      
+      context['form'] = form
+      return render(request, 'management/assets/documents_detail.html', context, status=400)
+  
+  # If it's a GET request, show an empty form
+  context['form'] = AssetDocumentForm()
+  return render(request, 'management/assets/documents_detail.html', context)
+
+def asset_delete_document(request, asset_id, document_id):
+  pass

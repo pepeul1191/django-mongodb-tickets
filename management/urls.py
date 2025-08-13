@@ -4,7 +4,7 @@ from .views.locations_views import locations,locations_provinces , locations_dis
 from .views.enterprises_views import enterprises_list, create_enterprise, update_enterprise, delete_enterprise
 from .views.roles_views import roles_list, create_role, update_role, delete_role
 from .views.tags_views import tags_list, create_tag, update_tag, delete_tag
-from .views.assets_views import assets_list, create_asset, update_asset, delete_asset
+from .views.assets_views import assets_list, create_asset, update_asset, delete_asset, asset_add_document, asset_delete_document
 
 urlpatterns = [
   path('', home, name='managment_index'),
@@ -48,4 +48,6 @@ urlpatterns = [
   path('assets/<str:asset_id>', update_asset, name='asset_detail'),
   path('assets/<str:asset_id>/edit', update_asset, name='update_asset'),
   path('assets/<str:asset_id>/delete', delete_asset, name='delete_asset'),
+  path('assets/<str:asset_id>/document', asset_add_document, name='asset_add_document'),
+  path('assets/<str:asset_id>/document/<str:document_id>/delete', asset_delete_document, name='asset_add_document'),
 ]

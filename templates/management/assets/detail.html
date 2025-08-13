@@ -96,6 +96,10 @@
         </form>
       </div>
     </div>
+
+    {% if editing %}
+      {% include './documents_list.html' %}
+    {% endif %}
   </div>
 </main>
 {% endblock %}

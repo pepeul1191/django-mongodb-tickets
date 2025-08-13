@@ -1,0 +1,51 @@
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h6 class="mb-0">
+      <i class="fa fa-list me-2"></i>
+      Listado Archivos del Activo
+    </h6>
+  </div>
+  <div class="card-body">
+    <div class="col-md-12 text-end">
+      <a href="{% url 'asset_add_document' asset_id=asset.id  %}" class="btn btn-primary">
+        <i class="fa fa-plus"></i> Agregar Archivo
+      </a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Tamaño</th>
+            <th>Tipo</th>
+            <th>Creación</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for document in documents %}
+            <tr>
+              <td>{{ document.name }}</td>
+              <td>{{ document.size }}</td>
+              <td>{{ document.mime }}</td>
+              <td>{{ document.created }}</td>
+              <td class="text-end btn-group-sm">
+                <a href="/" class="btn btn-outline-secondary me-1">
+                  <i class="fa fa-times"></i> Ver
+                </a>
+                <a href="{% url 'asset_delete_document' asset_id=asset.id document.id %}" class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de eliminar este archivo?');">
+                  <i class="fa fa-trash"></i> Eliminar
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No se encontraron documentos.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
