@@ -1,3 +1,4 @@
+import json
 from bson import ObjectId
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -6,6 +7,7 @@ from mongoengine.queryset import Q # Usa esta importación
 from management.forms.enterprises_forms import EnterpriseForm
 from mongoengine.errors import DoesNotExist
 from management.models.enterprise import Enterprise
+from management.models.asset import Asset
 from datetime import datetime
 import math
 
@@ -208,3 +210,101 @@ def update_enterprise(request, enterprise_id):
     'location': location_data
   }
   return render(request, 'management/enterprises/detail.html', context)
+
+def emplolyees_enterprise(request, enterprise_id):
+  pass
+
+def assets_enterprise(request, enterprise_id):
+  if request.method == 'POST':
+    try:
+      data = json.loads(request.body)
+      assets = data['assets']
+      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
+      tmp = enterprise.assets_ids
+      for asset in assets:
+        selected = asset['selected']
+        asset_id = ObjectId(asset['id'])
+        if selected == False and asset_id in tmp:
+          tmp.remove(asset_id)
+        if selected == True and asset_id not in tmp:
+          tmp.append(asset_id)
+        enterprise.assets_ids = list(tmp)
+        enterprise.save()
+      return JsonResponse({'message': f'Se ha asociado a la empresa {enterprise.business_name} lo inventarios', 'status': 'sucess'}, status=200)
+    except Exception as e:
+      return JsonResponse({'error': str(e), 'message': f'Ocurrió un error al asociar los inventarios a la empresa {enterprise.business_name}'}, status=500)
+    
+  else:
+    # Obtener parámetros de la URL
+    page_number = request.GET.get('page', 1)
+    per_page = request.GET.get('per_page', 10)
+    search_query = request.GET.get('name', '')
+    code_query = request.GET.get('code', '') 
+    association_status = request.GET.get('association_status', 2) 
+
+    # Validar y convertir a enteros
+    try:
+      page_number = int(page_number)
+      per_page = int(per_page)
+    except (ValueError, TypeError):
+      page_number = 1
+      per_page = 10
+    
+    # Validar que no sean valores negativos o cero
+    if page_number < 1:
+      page_number = 1
+    if per_page < 1:
+      per_page = 10
+
+    # Consultar y filtrar las activos
+    assets = Asset.objects.all()
+    # Construir una lista de consultas Q para combinar
+    query_list = []
+    if search_query:
+      query_list.append(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+
+    if query_list:
+      # Combinar todas las consultas con AND
+      combined_query = query_list[0]
+      for q in query_list[1:]:
+        combined_query &= q
+      assets = assets.filter(combined_query)
+
+    if code_query:
+      query_list.append(Q(code__icontains=code_query))
+
+    # Aplicar filtros si hay consultas
+    if query_list:
+      # Combinar todas las consultas con AND
+      combined_query = query_list[0]
+      for q in query_list[1:]:
+        combined_query &= q
+      assets = assets.filter(combined_query)
+
+    # Lógica de paginación
+    total_assets = assets.count()
+    total_pages = math.ceil(total_assets / per_page)
+    
+    # Calcular el offset para la consulta (skip)
+    offset = (page_number - 1) * per_page
+    
+    # Obtener las empresas para la página actual
+    paginated_assets = assets.skip(offset).limit(per_page)
+
+    context = {
+      'nav_link': nav_link,
+      'page_title': 'Gestión de Activos',
+      'assets': paginated_assets,
+      'search_query': search_query,
+      'code_query': code_query,
+      'page': page_number,
+      'per_page': per_page,
+      'association_status': association_status,
+      'total_assets': total_assets,
+      'total_pages': total_pages,
+      'start_record': offset + 1,
+      'end_record': min(offset + per_page, total_assets),
+      'enterprise_id': enterprise_id,
+    }
+
+    return render(request, 'management/enterprises/assets.html', context)

@@ -1,4 +1,4 @@
-from mongoengine import Document, ObjectIdField, StringField, DateTimeField
+from mongoengine import Document, ObjectIdField, StringField, DateTimeField, ListField
 from datetime import datetime
 from bson import ObjectId
 
@@ -12,7 +12,9 @@ class Enterprise(Document):
     'indexes': [
       'tax_id',
       'email',
-      'location_id'
+      'location_id',
+      'assets_ids',
+      'employees_ids'
     ],
     'ordering': ['-created']
   }
@@ -27,6 +29,8 @@ class Enterprise(Document):
   email = StringField(required=True, regex=r'^[^@]+@[^@]+\.[^@]+')
   website = StringField(regex=r'^https?://[^\s/$.?#].[^\s]*$')
   image_url = StringField(default='https://placehold.co/600x400/E0E0E0/333333?text=Sin+Imagen')
+  assets_ids = ListField(ObjectIdField(), default=list)
+  employees_ids = ListField(ObjectIdField(), default=list)
   created = DateTimeField(default=datetime.utcnow)
   updated = DateTimeField(default=datetime.utcnow)
 
@@ -49,6 +53,8 @@ class Enterprise(Document):
       'email': self.email,
       'website': self.website,
       'imageUrl': self.image_url,
+      'assetsIds': [str(id) for id in self.assets_ids],
+      'employeesIds': [str(id) for id in self.employees_ids],
       'created': self.created,
       'updated': self.updated
     }
@@ -59,4 +65,3 @@ class Enterprise(Document):
       return cls.objects.get(id=ObjectId(enterprise_id))
     except (cls.DoesNotExist, Exception):
       return None
-

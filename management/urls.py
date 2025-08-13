@@ -1,7 +1,7 @@
 from django.urls import path
 from .views.index_views import home
 from .views.locations_views import locations,locations_provinces , locations_districts, departments, departments_edit, departments_delete, provinces_add, provinces_edit, provinces_delete, districts_add, districts_edit, districts_delete
-from .views.enterprises_views import enterprises_list, create_enterprise, update_enterprise, delete_enterprise
+from .views.enterprises_views import enterprises_list, create_enterprise, update_enterprise, delete_enterprise, emplolyees_enterprise, assets_enterprise
 from .views.roles_views import roles_list, create_role, update_role, delete_role
 from .views.tags_views import tags_list, create_tag, update_tag, delete_tag
 from .views.assets_views import assets_list, create_asset, update_asset, delete_asset, asset_add_document, asset_delete_document
@@ -31,6 +31,8 @@ urlpatterns = [
   path('enterprises/<str:enterprise_id>', update_enterprise, name='enterprise_detail'),
   path('enterprises/<str:enterprise_id>/edit', update_enterprise, name='update_enterprise'),
   path('enterprises/<str:enterprise_id>/delete', delete_enterprise, name='delete_enterprise'),
+  path('enterprises/<str:enterprise_id>/employees', emplolyees_enterprise, name='emplolyees_enterprise'),
+  path('enterprises/<str:enterprise_id>/assets', assets_enterprise, name='assets_enterprise'),
   # roles
   path('roles/', roles_list, name='roles_list'),
   path('roles/add', create_role, name='roles_add'),

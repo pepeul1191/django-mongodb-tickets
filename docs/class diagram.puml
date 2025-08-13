@@ -22,6 +22,7 @@ class Enterprise {
   - website: String
   - imageUrl: String
   - assetsIds: Array<ObjectId>
+  - employeesIds: Array<ObjectId>
   - created: DateTime
   - updated: DateTime
 }
@@ -39,8 +40,6 @@ class Employee {
   - updated: DateTime
   - userId: ObjectId
 }
-
-Employee "1" --* "n" Enterprise : pertenece
 
 class Priority {
   - _id: ObjectId
@@ -145,6 +144,8 @@ class Roles {
   + updated: Datetime
 }
 
+Enterprise "n" o-- "n" Asset : tiene
+Enterprise "n" o-- "n" Employee : tiene
 Issue "n" *-- "1" Employee : crea
 Issue "n" o-- "n" Employee : mira
 Issue "n" o-- "n" Employee : edita

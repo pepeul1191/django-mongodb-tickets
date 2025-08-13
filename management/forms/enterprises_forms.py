@@ -88,5 +88,19 @@ class EnterpriseForm(forms.Form):
     required=False
   )
 
+  def clean_assets_ids(self):
+    """Validación opcional para asegurar que es una lista de ObjectIds"""
+    data = self.cleaned_data.get('assets_ids', [])
+    if not isinstance(data, list):
+      raise ValidationError("Debe ser una lista de IDs")
+    return data
+
+  def clean_employees_ids(self):
+    """Validación opcional para asegurar que es una lista de ObjectIds"""
+    data = self.cleaned_data.get('employees_ids', [])
+    if not isinstance(data, list):
+      raise ValidationError("Debe ser una lista de IDs")
+    return data
+
   created = forms.DateTimeField(required=False)
   updated = forms.DateTimeField(required=False)

@@ -100,6 +100,12 @@
                   <td>{{ enterprise.trade_name }}</td>
                   <td>{{ enterprise.tax_id }}</td>
                   <td class="text-end btn-group-sm">
+                    <a href="{% url 'emplolyees_enterprise' enterprise_id=enterprise.id %}" class="btn btn-outline-secondary me-1">
+                      <i class="fa fa-user"></i> Empleados
+                    </a>
+                    <a href="{% url 'assets_enterprise' enterprise_id=enterprise.id %}" class="btn btn-outline-secondary me-1">
+                      <i class="fa fa-cube"></i> Activos
+                    </a>
                     <a href="{% url 'update_enterprise' enterprise_id=enterprise.id %}" class="btn btn-outline-secondary me-1">
                       <i class="fa fa-edit"></i> Editar
                     </a>
