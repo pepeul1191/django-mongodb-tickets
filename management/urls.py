@@ -49,5 +49,5 @@ urlpatterns = [
   path('assets/<str:asset_id>/edit', update_asset, name='update_asset'),
   path('assets/<str:asset_id>/delete', delete_asset, name='delete_asset'),
   path('assets/<str:asset_id>/document', asset_add_document, name='asset_add_document'),
-  path('assets/<str:asset_id>/document/<str:document_id>/delete', asset_delete_document, name='asset_add_document'),
+  path('assets/<str:asset_id>/document/<str:document_id>/delete', asset_delete_document, name='asset_delete_document'),
 ]

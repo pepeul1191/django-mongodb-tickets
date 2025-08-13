@@ -31,12 +31,12 @@ class Asset(Document):
       f"Documents: {len(self.documents)} attached\n"
       f"Created: {self.created.strftime('%Y-%m-%d %H:%M')} (UTC)\n"
       f"Updated: {self.updated.strftime('%Y-%m-%d %H:%M')} (UTC)\n"
-      f"ID: {str(self._id)}"
+      f"ID: {str(self.id)}"
     )
 
   def to_dict(self):
     return {
-      'id': str(self._id),
+      'id': str(self.id),
       'name': self.name,
       'code': self.code,
       'description': self.description,

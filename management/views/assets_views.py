@@ -191,6 +191,7 @@ def update_asset(request, asset_id):
       'code': asset.code,
     }
     form = AssetForm(initial=initial_data)
+
   context = {
     'editing': True,
     'form': form,
@@ -250,4 +251,24 @@ def asset_add_document(request, asset_id):
   return render(request, 'management/assets/documents_detail.html', context)
 
 def asset_delete_document(request, asset_id, document_id):
-  pass
+  try:
+    # Corrección: Usar Asset.objects.get() o el manager .objects
+    asset = get_object_or_404(Asset.objects, id=ObjectId(asset_id))
+    document_to_delete = None
+    
+    for doc in asset.documents:
+      if str(doc.id) == document_id:
+        document_to_delete = doc
+        break
+    
+    if not document_to_delete:
+      messages.error(request, "Documento no encontrado")
+    else:
+      asset.documents.remove(document_to_delete)
+      asset.save()
+      messages.success(request, "Documento eliminado correctamente")
+  
+  except Exception as e:
+    messages.error(request, f"Error al eliminar: {str(e)}")
+  
+  return redirect('update_asset', asset_id=asset_id)

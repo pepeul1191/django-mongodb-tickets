@@ -1,3 +1,4 @@
+{% load main_filters %} 
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h6 class="mb-0">
@@ -24,17 +25,17 @@
           </tr>
         </thead>
         <tbody>
-          {% for document in documents %}
+          {% for document in asset.documents %}
             <tr>
               <td>{{ document.name }}</td>
-              <td>{{ document.size }}</td>
+              <td>{{ document.size|div:1048576|floatformat:2 }} MB</td>
               <td>{{ document.mime }}</td>
-              <td>{{ document.created }}</td>
+              <td>{{ document.created|to_datetime_local |default:''}}</td>
               <td class="text-end btn-group-sm">
-                <a href="/" class="btn btn-outline-secondary me-1">
-                  <i class="fa fa-times"></i> Ver
+                <a href="{{ FILES_URL_FROM_ENV }}/public{{ document.url }}" class="btn btn-outline-secondary me-1" target="_blank">
+                  <i class="fa fa-download"></i> Descargar
                 </a>
-                <a href="{% url 'asset_delete_document' asset_id=asset.id document.id %}" class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de eliminar este archivo?');">
+                <a href="{% url 'asset_delete_document' asset_id=asset.id document_id=document.id %}"  class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de eliminar este archivo?');">
                   <i class="fa fa-trash"></i> Eliminar
                 </a>
               </td>
