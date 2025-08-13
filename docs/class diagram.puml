@@ -30,6 +30,11 @@ class Employee {
   - _id: ObjectId
   - names: String
   - lastNames: String
+  - documentNumber: String
+  - documentType: String
+  - email: String
+  - phone: String
+  - imageUrl: String
   - created: DateTime
   - updated: DateTime
   - userId: ObjectId

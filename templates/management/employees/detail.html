@@ -18,23 +18,6 @@
 
   // Initialize the component with custom options
   document.addEventListener('DOMContentLoaded', () => {
-    // Inicialización
-    const autocomplete = new AutoComplete({
-      inputId: 'searchInput',
-      suggestionsId: 'suggestionsContainer',
-      hiddenInputId: 'selectedId',
-      apiUrl: URLS.BASE + '/api/v1/locations/search',
-      jwtToken: 'tu_token_jwt',
-      displayKey: 'full_name',
-      valueKey: 'district_id',
-      minChars: 2
-    });
-
-    // Escuchar selecciones
-    document.getElementById('searchInput').addEventListener('autocomplete-select', (e) => {
-      console.log('Seleccionado:', e.detail);
-    });
-
     const fileUpload = new FileUpload({
         // Configurable DOM element IDs
         containerId: "fileUploadContainer",
@@ -46,7 +29,7 @@
         helpTextId: "helpText",
         labelElementId: null, // Auto-detect if null
         baseURL: URLS.FILES,
-        url: 'api/v1/public/enterprises',
+        url: 'api/v1/public/employees',
         
         // Button configuration
         onViewClick: (file) => {
@@ -79,8 +62,8 @@
 <main class="main-content">
   <div class="container-fluid py-4">
     <h3 class="mb-4">
-      <a class="return-nav" href="/management/enterprises/"><i class="fa fa-industry me-2"></i>Gestión de Empresas</a>
-      / {% if editing %}Editar{% else %}Nueva{% endif %} Empresa
+      <a class="return-nav" href="/management/employees/"><i class="fa fa-user me-2"></i>Gestión de Empleados</a>
+      / {% if editing %}Editar{% else %}Nuevo{% endif %} Empleado
     </h3>
 
     {% if messages %}
@@ -96,83 +79,59 @@
       <div class="card-header">
         <h6 class="mb-0">
           <i class="fa fa-info-circle me-2"></i>
-          Datos de la Empresa
+          Datos del Empleado
         </h6>
       </div>
       <div class="card-body">
-        <form method="POST" enctype="multipart/form-data" action="{% if editing %}/management/enterprises/{{enterprise.id}}/edit {% else %}/management/enterprises/add{% endif %}">
+        <form method="POST" enctype="multipart/form-data" action="{% if editing %}/management/employees/{{employee.id}}/edit {% else %}/management/employees/add{% endif %}">
           {% csrf_token %}
           
-          <input type="hidden" value="{{ enterprise.id }}" name="id">
+          <input type="hidden" value="{{ employee.id }}" name="id">
           {{ form.image_url }}
-          {{ form.location_id }}
+          {{ form.user_id }}
           
           <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="{{ form.business_name.id_for_label }}" class="form-label">{{ form.business_name.label }}</label>
-              {{ form.business_name }}
-              {% if form.business_name.errors %}
-                <div class="text-danger">{{ form.business_name.errors }}</div>
+            <div class="col-md-4">
+              <label for="{{ form.names.id_for_label }}" class="form-label">{{ form.names.label }}</label>
+              {{ form.names }}
+              {% if form.names.errors %}
+                <div class="text-danger">{{ form.names.errors }}</div>
               {% endif %}
             </div>
-            <div class="col-md-6">
-              <label for="{{ form.trade_name.id_for_label }}" class="form-label">{{ form.trade_name.label }}</label>
-              {{ form.trade_name }}
+            <div class="col-md-4">
+              <label for="{{ form.last_names.id_for_label }}" class="form-label">{{ form.last_names.label }}</label>
+              {{ form.last_names }}
+              {% if form.last_names.errors %}
+                <div class="text-danger">{{ form.last_names.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-2">
+              <label for="{{ form.document_type.id_for_label }}" class="form-label">{{ form.document_type.label }}</label>
+              {{ form.document_type }}
+              {% if form.document_type.errors %}
+                <div class="text-danger">{{ form.document_type.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-2">
+              <label for="{{ form.document_number.id_for_label }}" class="form-label">{{ form.document_number.label }}</label>
+              {{ form.document_number }}
+              {% if form.document_number.errors %}
+                <div class="text-danger">{{ form.document_number.errors }}</div>
+              {% endif %}
             </div>
           </div>
           
-          <div class="row mb-3">
-            <div class="col-md-2">
-              <label for="{{ form.tax_id.id_for_label }}" class="form-label">{{ form.tax_id.label }}</label>
-              {{ form.tax_id }}
-              <div class="form-text">11 dígitos</div>
-              {% if form.tax_id.errors %}
-                <div class="text-danger">{{ form.tax_id.errors }}</div>
-              {% endif %}
-            </div>
+          <div class="row">
             <div class="col-md-2">
               <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
               {{ form.phone }}
             </div>
-            <div class="col-md-5">
-              <label for="{{ form.website.id_for_label }}" class="form-label">{{ form.website.label }}</label>
-              {{ form.website }}
-              {% if form.website.errors %}
-                <div class="text-danger">{{ form.website.errors }}</div>
-              {% endif %}
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
               {{ form.email }}
               {% if form.email.errors %}
                 <div class="text-danger">{{ form.email.errors }}</div>
               {% endif %}
-            </div>
-          </div>
-      
-          <div class="row mb-3">
-            <div class="col-md-4 autocomplete-wrapper" style="overflow-x: auto; white-space: nowrap;">
-              <label class="form-label">Locación: Distrito / Provincia / Departamento</label>
-              <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." autocomplete="off" value="{{ location.full_name|default:'' }}">
-              <div id="suggestionsContainer" class="suggestion-list"></div>
-            </div>
-            <div class="col-md-8">
-              <label for="{{ form.fiscal_address.id_for_label }}" class="form-label">{{ form.fiscal_address.label }}</label>
-              {{ form.fiscal_address }}
-              {% if form.fiscal_address.errors %}
-                <div class="text-danger">{{ form.fiscal_address.errors }}</div>
-              {% endif %}
-            </div>
-          </div>
-          
-          <div class="row mb-3">
-            <div class="col-md-2">
-              <label for="created" class="form-label">Creado</label>
-              <input type="datetime-local" class="form-control" id="created" name="created" value="{{ enterprise.created|to_datetime_local |default:''}}" disabled>
-            </div>
-            <div class="col-md-2">
-              <label for="updated" class="form-label">Actualizado</label>
-              <input type="datetime-local" class="form-control" id="updated" name="updated" disabled value="{{ enterprise.updated|to_datetime_local |default:''}}">
             </div>
             <div class="col-md-6">
               <div class="mb-3" id="fileUploadContainer">
@@ -191,8 +150,21 @@
                 <div id="successMessage" class="text-success mt-2"></div>
               </div>
             </div>
-            <div class="col-md-2 justify-content-end btn-row">
-              <a href="/management/enterprises" class="btn btn-light me-3">
+          </div>
+      
+          
+          <div class="row">
+            <div class="col-md-2">
+              <label for="created" class="form-label">Creado</label>
+              <input type="datetime-local" class="form-control" id="created" name="created" value="{{ employee.created|to_datetime_local |default:''}}" disabled>
+            </div>
+            <div class="col-md-2">
+              <label for="updated" class="form-label">Actualizado</label>
+              <input type="datetime-local" class="form-control" id="updated" name="updated" disabled value="{{ employee.updated|to_datetime_local |default:''}}">
+            </div>
+            
+            <div class="col-md-8 text-end btn-row">
+              <a href="/management/employees" class="btn btn-light me-3">
                 <i class="fa fa-times me-2"></i>Cancelar
               </a>
               <button type="submit" class="btn btn-primary">

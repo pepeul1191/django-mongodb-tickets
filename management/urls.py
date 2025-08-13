@@ -5,6 +5,7 @@ from .views.enterprises_views import enterprises_list, create_enterprise, update
 from .views.roles_views import roles_list, create_role, update_role, delete_role
 from .views.tags_views import tags_list, create_tag, update_tag, delete_tag
 from .views.assets_views import assets_list, create_asset, update_asset, delete_asset, asset_add_document, asset_delete_document
+from .views.employees_views import employees_list, create_employee, update_employee, delete_employee
 
 urlpatterns = [
   path('', home, name='managment_index'),
@@ -50,4 +51,10 @@ urlpatterns = [
   path('assets/<str:asset_id>/delete', delete_asset, name='delete_asset'),
   path('assets/<str:asset_id>/document', asset_add_document, name='asset_add_document'),
   path('assets/<str:asset_id>/document/<str:document_id>/delete', asset_delete_document, name='asset_delete_document'),
+   # employees
+  path('employees/', employees_list, name='employees_list'),
+  path('employees/add', create_employee, name='employees_add'),
+  path('employees/<str:employee_id>', update_employee, name='employee_detail'),
+  path('employees/<str:employee_id>/edit', update_employee, name='update_employee'),
+  path('employees/<str:employee_id>/delete', delete_employee, name='delete_employee'),
 ]
