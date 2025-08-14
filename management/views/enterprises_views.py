@@ -8,6 +8,7 @@ from management.forms.enterprises_forms import EnterpriseForm
 from mongoengine.errors import DoesNotExist
 from management.models.enterprise import Enterprise
 from management.models.asset import Asset
+from management.models.employee import Employee
 from datetime import datetime
 import math
 
@@ -211,8 +212,100 @@ def update_enterprise(request, enterprise_id):
   }
   return render(request, 'management/enterprises/detail.html', context)
 
-def emplolyees_enterprise(request, enterprise_id):
-  pass
+def employees_enterprise(request, enterprise_id):
+  if request.method == 'POST':
+    try:
+      data = json.loads(request.body)
+      employees = data['employees']
+      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
+      tmp = enterprise.employees_ids
+      for employee in employees:
+        selected = employee['selected']
+        employee_id = ObjectId(employee['id'])
+        if selected == False and employee_id in tmp:
+          tmp.remove(employee_id)
+        if selected == True and employee_id not in tmp:
+          tmp.append(employee_id)
+        enterprise.employees_ids = list(tmp)
+        enterprise.save()
+      return JsonResponse({'message': f'Activos asociados a {enterprise.business_name}', 'status': 'success'}, status=200)
+    except Exception as e:
+      return JsonResponse({'error': str(e), 'message': f'Error al asociar activos'}, status=500)
+  
+  else:
+    # Parámetros de URL
+    page_number = request.GET.get('page', 1)
+    per_page = request.GET.get('per_page', 10)
+    search_query = request.GET.get('name', '')
+    email_query = request.GET.get('email', '') 
+    association_status = request.GET.get('association_status', '2') 
+
+    # Validación
+    try:
+      page_number = int(page_number)
+      per_page = int(per_page)
+    except (ValueError, TypeError):
+      page_number = 1
+      per_page = 10
+    
+    if page_number < 1: page_number = 1
+    if per_page < 1: per_page = 10
+
+    # Obtener IDs de activos asociados
+    try:
+      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
+      enterprise_employees_ids = enterprise.employees_ids or []
+    except Enterprise.DoesNotExist:
+      enterprise_employees_ids = []
+
+    # Consulta base
+    employees = Employee.objects.all()
+    
+    # Filtros de búsqueda
+    if search_query:
+      employees = employees.filter(Q(names__icontains=search_query) | Q(last_names__icontains=search_query))
+    if email_query:
+      employees = employees.filter(email__icontains=email_query)
+
+    # Filtro por asociación (CORRECCIÓN PRINCIPAL)
+    if association_status == '1':  # Solo asociados
+      employees = employees.filter(id__in=enterprise_employees_ids)
+    elif association_status == '0':  # Solo no asociados
+      employees = employees.filter(id__nin=enterprise_employees_ids)  # Usar __nin en lugar de exclude()
+
+    # Preparar datos para template
+    employees_list = []
+    for employee in employees:
+      employees_list.append({
+        'id': str(employee.id),
+        'email': employee.email,
+        'names': employee.names,
+        'last_names': employee.last_names,
+        'associated': str(employee.id) in [str(aid) for aid in enterprise_employees_ids]
+      })
+
+    # Paginación
+    total_employees = len(employees_list)
+    total_pages = math.ceil(total_employees / per_page)
+    offset = (page_number - 1) * per_page
+    paginated_employees = employees_list[offset:offset + per_page]
+
+    context = {
+      'employees': paginated_employees,
+      'search_query': search_query,
+      'email_query': email_query,
+      'page': page_number,
+      'per_page': per_page,
+      'association_status': int(association_status),
+      'total_employees': total_employees,
+      'total_pages': total_pages,
+      'nav_link': nav_link,
+      'start_record': offset + 1,
+      'end_record': min(offset + per_page, total_employees),
+      'enterprise_id': enterprise_id,
+    }
+
+    return render(request, 'management/enterprises/employees.html', context)
 
 def assets_enterprise(request, enterprise_id):
   if request.method == 'POST':
