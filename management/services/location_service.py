@@ -1,3 +1,4 @@
+# management/services/locations_service.py
 from bson import ObjectId
 from mongoengine.errors import DoesNotExist
 from management.models.location import Location
