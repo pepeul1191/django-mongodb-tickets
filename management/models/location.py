@@ -1,4 +1,4 @@
-from mongoengine import Document, ObjectIdField, StringField, ReferenceField
+from mongoengine import Document, StringField, ReferenceField
 from bson import ObjectId
 from mongoengine.queryset.visitor import Q
 
@@ -10,12 +10,18 @@ class Location(Document):
   meta = {
     'collection': 'locations',
     'indexes': [
-      'name',
-      'type',
-      'parent_id',
       {
         'fields': ['name'],
-        'collation': {'locale': 'es', 'strength': 2}  # Para búsquedas case-insensitive en español
+        'name': 'name_es_collation',
+        'collation': {'locale': 'es', 'strength': 2}
+      },
+      {
+        'fields': ['type'],
+        'name': 'type_index'
+      },
+      {
+        'fields': ['parent_id'],
+        'name': 'parent_id_index'
       }
     ]
   }
