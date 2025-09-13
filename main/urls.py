@@ -21,6 +21,8 @@ from main import views
 urlpatterns = [
   path('', views.index, name='home'),
   path('sign-in', views.sing_in, name='sign_in'),
+  path('sign-out', views.sing_out, name='sign_out'),
+  path('profile', views.profile, name='profile'),
   path('reset-password', views.reset_password, name='reset_password'),
   path('management/', include('management.urls')),
   path('api/', include('api.urls')),

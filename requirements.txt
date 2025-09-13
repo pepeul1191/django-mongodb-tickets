@@ -6,3 +6,4 @@ django-cors-headers
 pytz
 faker
 markdown-generator
+requests

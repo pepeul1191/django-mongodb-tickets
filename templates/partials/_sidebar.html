@@ -41,20 +41,20 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link {% if nav_link == 'roles' %}active{% endif %}" href="/management/roles">
-        <i class="fa fa-list me-2"></i> Roles de Usuarios
+      <a class="nav-link {% if nav_link == 'roles' %}active{% endif %}" href="/management/issue-states">
+        <i class="fa fa-list me-2"></i> Estados de Incidencias
       </a>
     </li>
-    
+
     <li class="nav-item">
-      <a class="nav-link" href="/management/users">
-        <i class="fa fa-users me-2"></i> Usuarios
+      <a class="nav-link {% if nav_link == 'roles' %}active{% endif %}" href="/management/priorities">
+        <i class="fa fa-sort me-2"></i> Prioridades de Incidencias
       </a>
     </li>
     
     <li class="nav-item">
       <a class="nav-link" href="#productosSubmenu" data-bs-toggle="collapse">
-        <i class="fa fa-cubes me-2"></i> Productos
+        <i class="fa fa-cubes me-2"></i> Incidencias
       </a>
       <ul id="productosSubmenu" class="collapse nav flex-column ps-4">
         <li class="nav-item">

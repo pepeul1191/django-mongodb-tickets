@@ -23,5 +23,9 @@ Restaurar backup de la base de datos MongoDB:
     MONGO_USER=usuario_mongo
     MONGO_PASS=contraseña_segura
     MONGO_AUTH_SOURCE=admin
-    BASE_URL=http://localhost:8000/
-    FILES_URL=http://localhost:8000/
+    BASE_URL=http://localhost:8000
+    FILES_URL=http://localhost:4000
+    # access service
+    SYSTEM_ID=2
+    X_AUTH_ACCESS_SERVICE=dXNlci1zdGlja3lfc2VjcmV0XzEyMzQ1Njc
+    URL_ACCESS_SERVICE=http://localhost:8085

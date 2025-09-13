@@ -122,18 +122,11 @@ class Log <<embedded>>{
   - created: DateTime
 }
 
-class User {
+class UserEmbedded <<embedded>> {
   + _id: ObjectId
   + username: String
-  + email: String
-  + isActive: Boolean
-  + resetKey: String
+  + user_id: Integer
   + googleUserId: String
-  + imageUrl: String
-  + activationKey: String
-  + created: Datetime
-  + updated: Datetime
-  + rolesIds: Array[ObjectId]
 }
 
 class Roles {

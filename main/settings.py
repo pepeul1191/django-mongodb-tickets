@@ -75,6 +75,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'main.helpers.custom_urls',
+                'main.helpers.custom_auth_status',
+                'main.helpers.custom_user_has_role',
             ],
             'libraries': {
                 'main_filters': 'main.filters',  # Registra tus nuevos filters
@@ -189,3 +191,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Si necesitas permitir credenciales (cookies, auth)
 CORS_ALLOW_CREDENTIALS = True
+
+# session
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_NAME = 'mi_sesion'            # nombre de la cookie
+SESSION_COOKIE_HTTPONLY = True               # evita acceso por JS
+SESSION_COOKIE_SECURE = True                 # solo por HTTPS
+SESSION_COOKIE_AGE = 60 * 60 * 24            # 1 día (en segundos)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False      # mantener sesión después de cerrar navegador
