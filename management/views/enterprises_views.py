@@ -1,139 +1,77 @@
+# management/views/enterprises_view.py
 import json
-from bson import ObjectId
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.contrib import messages
-from mongoengine.queryset import Q # Usa esta importación
+from management.services.enterprise_service import EnterpriseService
 from management.forms.enterprises_forms import EnterpriseForm
-from mongoengine.errors import DoesNotExist
-from management.models.enterprise import Enterprise
-from management.models.asset import Asset
-from management.models.employee import Employee
-from datetime import datetime
-import math
-
-from management.models.location import Location
 
 nav_link = 'enterprises'
 
 def enterprises_list(request):
-  # Obtener parámetros de la URL
   page_number = request.GET.get('page', 1)
   per_page = request.GET.get('per_page', 10)
   search_query = request.GET.get('name', '')
-  tax_id_query = request.GET.get('tax_id', '') 
+  tax_id_query = request.GET.get('tax_id', '')
 
-  # Validar y convertir a enteros
-  try:
-    page_number = int(page_number)
-    per_page = int(per_page)
-  except (ValueError, TypeError):
-    page_number = 1
-    per_page = 10
+  result = EnterpriseService.get_enterprises_list(page_number, per_page, search_query, tax_id_query)
   
-  # Validar que no sean valores negativos o cero
-  if page_number < 1:
-    page_number = 1
-  if per_page < 1:
-    per_page = 10
-
-  # Consultar y filtrar las empresas
-  enterprises = Enterprise.objects.all()
-  # Construir una lista de consultas Q para combinar
-  query_list = []
-  if search_query:
-    query_list.append(Q(business_name__icontains=search_query) | Q(trade_name__icontains=search_query))
-  
-  if tax_id_query:
-    query_list.append(Q(tax_id__icontains=tax_id_query))
-
-  if query_list:
-    # Combinar todas las consultas con AND
-    combined_query = query_list[0]
-    for q in query_list[1:]:
-      combined_query &= q
-    enterprises = enterprises.filter(combined_query)
-
-  # Lógica de paginación
-  total_enterprises = enterprises.count()
-  total_pages = math.ceil(total_enterprises / per_page)
-  
-  # Calcular el offset para la consulta (skip)
-  offset = (page_number - 1) * per_page
-  
-  # Obtener las empresas para la página actual
-  paginated_enterprises = enterprises.skip(offset).limit(per_page)
-
   context = {
     'nav_link': nav_link,
     'page_title': 'Gestión de Empresas',
-    'enterprises': paginated_enterprises,
+    'enterprises': result['enterprises'],
     'search_query': search_query,
-    'page': page_number,
-    'per_page': per_page,
+    'page': result['page_number'],
+    'per_page': result['per_page'],
     'tax_id_query': tax_id_query,
-    'total_enterprises': total_enterprises,
-    'total_pages': total_pages,
-    'start_record': offset + 1,
-    'end_record': min(offset + per_page, total_enterprises),
+    'total_enterprises': result['total_enterprises'],
+    'total_pages': result['total_pages'],
+    'start_record': result['offset'] + 1,
+    'end_record': min(result['offset'] + result['per_page'], result['total_enterprises']),
   }
 
   return render(request, 'management/enterprises/list.html', context)
 
 def delete_enterprise(request, enterprise_id):
   if request.method == 'GET':
-    try:
-      # Usamos el ObjectId para encontrar el documento
-      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
-      enterprise.delete()
-      messages.success(request, f'La empresa "{enterprise.business_name}" ha sido eliminada correctamente.')
-    except Enterprise.DoesNotExist:
-      messages.error(request, 'La empresa no fue encontrada.')
-    except Exception as e:
-      messages.error(request, f'Ocurrió un error al intentar eliminar la empresa: {e}')
+    success, result = EnterpriseService.delete_enterprise(enterprise_id)
+    
+    if success:
+      messages.success(request, f'La empresa "{result}" ha sido eliminada correctamente.')
+    else:
+      messages.error(request, f'Ocurrió un error al intentar eliminar la empresa: {result}')
     
     return redirect('enterprises_list')
   else:
-    # Si la solicitud no es POST, puedes redirigir o mostrar una página de confirmación
-    # Para este ejemplo, simplemente redirigimos de vuelta a la lista
     return redirect('enterprises_list')
 
 def create_enterprise(request):
-  context = {
-    "nav_link": nav_link
-  }
+  context = {"nav_link": nav_link}
   
   if request.method == 'POST':
     form = EnterpriseForm(request.POST)
     
     if form.is_valid():
-      try:
-        # Create a new enterprise with form data
-        enterprise = Enterprise(
-          business_name=form.cleaned_data['business_name'],
-          trade_name=form.cleaned_data['trade_name'],
-          tax_id=form.cleaned_data['tax_id'],
-          fiscal_address=form.cleaned_data['fiscal_address'],
-          location_id=ObjectId(form.cleaned_data['location_id']),
-          phone=form.cleaned_data['phone'],
-          email=form.cleaned_data['email'],
-          website=form.cleaned_data['website'],
-          image_url=request.POST.get('image_url', '')  # File upload field
-        )
-        
-        # Save to MongoDB
-        enterprise.save()
-
-        # Success message and redirect
-        messages.success(request, '¡Empresa creada exitosamente!')
-        return redirect('enterprise_detail', enterprise_id=str(enterprise.id))
-          
-      except Exception as e:
-        messages.error(request, f'Error al crear en MongoDB: {str(e)}')
+      enterprise, error = EnterpriseService.create_enterprise(
+        form.cleaned_data['business_name'],
+        form.cleaned_data['trade_name'],
+        form.cleaned_data['tax_id'],
+        form.cleaned_data['fiscal_address'],
+        form.cleaned_data['location_id'],
+        form.cleaned_data['phone'],
+        form.cleaned_data['email'],
+        form.cleaned_data['website'],
+        request.POST.get('image_url', '')
+      )
+      
+      if error:
+        messages.error(request, f'Error al crear en MongoDB: {error}')
         context['form'] = form
         return render(request, 'management/enterprises/detail.html', context, status=500)
+      else:
+        messages.success(request, '¡Empresa creada exitosamente!')
+        return redirect('enterprise_detail', enterprise_id=str(enterprise.id))
     else:
-      # Show specific form errors
       for field, errors in form.errors.items():
         for error in errors:
           messages.error(request, f"{form.fields[field].label}: {error}")
@@ -141,54 +79,42 @@ def create_enterprise(request):
       context['form'] = form
       return render(request, 'management/enterprises/detail.html', context, status=400)
   
-  # If it's a GET request, show an empty form
   context['form'] = EnterpriseForm()
   return render(request, 'management/enterprises/detail.html', context)
 
 def update_enterprise(request, enterprise_id):
-  """
-  Vista para editar una empresa existente usando un forms.Form.
-  Maneja la carga del formulario con datos iniciales (GET) y
-  el guardado manual de los datos (POST).
-  """
-  try:
-    # 1. Obtener la instancia de la empresa de la base de datos
-    enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
-    location_data = Location.get_district_with_hierarchy(enterprise.location_id)
-  except Enterprise.DoesNotExist:
+  enterprise = EnterpriseService.get_enterprise_by_id(enterprise_id)
+  
+  if not enterprise:
     messages.error(request, 'La empresa no fue encontrada.')
     return redirect('enterprises_list')
-  except Exception as e:
-    messages.error(request, f'Error al buscar la empresa: {e}')
-    return redirect('enterprises_list')
+
+  location_data = EnterpriseService.get_location_hierarchy(enterprise.location_id)
 
   if request.method == 'POST':
-    # 2. Para POST, inicializar el formulario con los datos enviados
     form = EnterpriseForm(request.POST)
+    
     if form.is_valid():
-      # 3. Acceder a los datos limpios y actualizar el objeto manualmente
-      cleaned_data = form.cleaned_data
+      updated_enterprise, error = EnterpriseService.update_enterprise(
+        enterprise_id,
+        form.cleaned_data['business_name'],
+        form.cleaned_data['trade_name'],
+        form.cleaned_data['tax_id'],
+        form.cleaned_data['fiscal_address'],
+        form.cleaned_data['location_id'],
+        form.cleaned_data['phone'],
+        form.cleaned_data['email'],
+        form.cleaned_data['website'],
+        form.cleaned_data['image_url']
+      )
       
-      # Mapear los campos del formulario a los del modelo
-      enterprise.business_name = cleaned_data['business_name']
-      enterprise.trade_name = cleaned_data['trade_name']
-      enterprise.tax_id = cleaned_data['tax_id']
-      enterprise.phone = cleaned_data['phone']
-      enterprise.website = cleaned_data['website']
-      enterprise.email = cleaned_data['email']
-      enterprise.location_id = ObjectId(cleaned_data['location_id'])
-      enterprise.fiscal_address = cleaned_data['fiscal_address']
-      enterprise.image_url = cleaned_data['image_url']
-      
-      # 4. Guardar los cambios en la base de datos
-      enterprise.save() 
-      
-      messages.success(request, f'La empresa "{enterprise.business_name}" ha sido actualizada correctamente.')
+      if error:
+        messages.error(request, f'Error al actualizar: {error}')
+      else:
+        messages.success(request, f'La empresa "{updated_enterprise.business_name}" ha sido actualizada correctamente.')
     else:
       messages.error(request, 'Por favor, corrige los errores en el formulario.')
   else:
-    # 5. Para GET, crear un diccionario con los datos del objeto
-    #    y pasar el diccionario al parámetro 'initial'
     initial_data = {
       'id': str(enterprise.id),
       'business_name': enterprise.business_name,
@@ -202,6 +128,7 @@ def update_enterprise(request, enterprise_id):
       'image_url': enterprise.image_url,
     }
     form = EnterpriseForm(initial=initial_data)
+  
   context = {
     'editing': True,
     'form': form,
@@ -210,98 +137,49 @@ def update_enterprise(request, enterprise_id):
     'nav_link': nav_link, 
     'location': location_data
   }
+  
   return render(request, 'management/enterprises/detail.html', context)
 
 def employees_enterprise(request, enterprise_id):
   if request.method == 'POST':
     try:
       data = json.loads(request.body)
-      employees = data['employees']
-      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
-      tmp = enterprise.employees_ids
-      for employee in employees:
-        selected = employee['selected']
-        employee_id = ObjectId(employee['id'])
-        if selected == False and employee_id in tmp:
-          tmp.remove(employee_id)
-        if selected == True and employee_id not in tmp:
-          tmp.append(employee_id)
-        enterprise.employees_ids = list(tmp)
-        enterprise.save()
-      return JsonResponse({'message': f'Activos asociados a {enterprise.business_name}', 'status': 'success'}, status=200)
+      success, error = EnterpriseService.update_enterprise_employees(enterprise_id, data['employees'])
+      
+      if success:
+        return JsonResponse({'message': f'Empleados asociados a la empresa', 'status': 'success'}, status=200)
+      else:
+        return JsonResponse({'error': error, 'message': 'Error al asociar empleados'}, status=500)
     except Exception as e:
-      return JsonResponse({'error': str(e), 'message': f'Error al asociar activos'}, status=500)
+      return JsonResponse({'error': str(e), 'message': 'Error al procesar la solicitud'}, status=500)
   
   else:
-    # Parámetros de URL
     page_number = request.GET.get('page', 1)
     per_page = request.GET.get('per_page', 10)
     search_query = request.GET.get('name', '')
     email_query = request.GET.get('email', '') 
-    association_status = request.GET.get('association_status', '2') 
+    association_status = request.GET.get('association_status', '2')
 
-    # Validación
-    try:
-      page_number = int(page_number)
-      per_page = int(per_page)
-    except (ValueError, TypeError):
-      page_number = 1
-      per_page = 10
+    result = EnterpriseService.get_enterprise_employees(
+      enterprise_id, page_number, per_page, search_query, email_query, association_status
+    )
     
-    if page_number < 1: page_number = 1
-    if per_page < 1: per_page = 10
-
-    # Obtener IDs de activos asociados
-    try:
-      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
-      enterprise_employees_ids = enterprise.employees_ids or []
-    except Enterprise.DoesNotExist:
-      enterprise_employees_ids = []
-
-    # Consulta base
-    employees = Employee.objects.all()
-    
-    # Filtros de búsqueda
-    if search_query:
-      employees = employees.filter(Q(names__icontains=search_query) | Q(last_names__icontains=search_query))
-    if email_query:
-      employees = employees.filter(email__icontains=email_query)
-
-    # Filtro por asociación (CORRECCIÓN PRINCIPAL)
-    if association_status == '1':  # Solo asociados
-      employees = employees.filter(id__in=enterprise_employees_ids)
-    elif association_status == '0':  # Solo no asociados
-      employees = employees.filter(id__nin=enterprise_employees_ids)  # Usar __nin en lugar de exclude()
-
-    # Preparar datos para template
-    employees_list = []
-    for employee in employees:
-      employees_list.append({
-        'id': str(employee.id),
-        'email': employee.email,
-        'names': employee.names,
-        'last_names': employee.last_names,
-        'associated': str(employee.id) in [str(aid) for aid in enterprise_employees_ids]
-      })
-
-    # Paginación
-    total_employees = len(employees_list)
-    total_pages = math.ceil(total_employees / per_page)
-    offset = (page_number - 1) * per_page
-    paginated_employees = employees_list[offset:offset + per_page]
+    if result is None:
+      messages.error(request, 'Error al cargar empleados')
+      return redirect('enterprises_list')
 
     context = {
-      'employees': paginated_employees,
+      'employees': result['employees'],
       'search_query': search_query,
       'email_query': email_query,
-      'page': page_number,
-      'per_page': per_page,
+      'page': result['page_number'],
+      'per_page': result['per_page'],
       'association_status': int(association_status),
-      'total_employees': total_employees,
-      'total_pages': total_pages,
+      'total_employees': result['total_employees'],
+      'total_pages': result['total_pages'],
       'nav_link': nav_link,
-      'start_record': offset + 1,
-      'end_record': min(offset + per_page, total_employees),
+      'start_record': result['offset'] + 1,
+      'end_record': min(result['offset'] + result['per_page'], result['total_employees']),
       'enterprise_id': enterprise_id,
     }
 
@@ -311,91 +189,42 @@ def assets_enterprise(request, enterprise_id):
   if request.method == 'POST':
     try:
       data = json.loads(request.body)
-      assets = data['assets']
-      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
-      tmp = enterprise.assets_ids
-      for asset in assets:
-        selected = asset['selected']
-        asset_id = ObjectId(asset['id'])
-        if selected == False and asset_id in tmp:
-          tmp.remove(asset_id)
-        if selected == True and asset_id not in tmp:
-          tmp.append(asset_id)
-        enterprise.assets_ids = list(tmp)
-        enterprise.save()
-      return JsonResponse({'message': f'Activos asociados a {enterprise.business_name}', 'status': 'success'}, status=200)
+      success, error = EnterpriseService.update_enterprise_assets(enterprise_id, data['assets'])
+      
+      if success:
+        return JsonResponse({'message': f'Activos asociados a la empresa', 'status': 'success'}, status=200)
+      else:
+        return JsonResponse({'error': error, 'message': 'Error al asociar activos'}, status=500)
     except Exception as e:
-      return JsonResponse({'error': str(e), 'message': f'Error al asociar activos'}, status=500)
+      return JsonResponse({'error': str(e), 'message': 'Error al procesar la solicitud'}, status=500)
   
   else:
-    # Parámetros de URL
     page_number = request.GET.get('page', 1)
     per_page = request.GET.get('per_page', 10)
     search_query = request.GET.get('name', '')
     code_query = request.GET.get('code', '') 
-    association_status = request.GET.get('association_status', '2') 
+    association_status = request.GET.get('association_status', '2')
 
-    # Validación
-    try:
-      page_number = int(page_number)
-      per_page = int(per_page)
-    except (ValueError, TypeError):
-      page_number = 1
-      per_page = 10
+    result = EnterpriseService.get_enterprise_assets(
+      enterprise_id, page_number, per_page, search_query, code_query, association_status
+    )
     
-    if page_number < 1: page_number = 1
-    if per_page < 1: per_page = 10
-
-    # Obtener IDs de activos asociados
-    try:
-      enterprise = Enterprise.objects.get(id=ObjectId(enterprise_id))
-      enterprise_assets_ids = enterprise.assets_ids or []
-    except Enterprise.DoesNotExist:
-      enterprise_assets_ids = []
-
-    # Consulta base
-    assets = Asset.objects.all()
-    
-    # Filtros de búsqueda
-    if search_query:
-      assets = assets.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
-    if code_query:
-      assets = assets.filter(code__icontains=code_query)
-
-    # Filtro por asociación (CORRECCIÓN PRINCIPAL)
-    if association_status == '1':  # Solo asociados
-      assets = assets.filter(id__in=enterprise_assets_ids)
-    elif association_status == '0':  # Solo no asociados
-      assets = assets.filter(id__nin=enterprise_assets_ids)  # Usar __nin en lugar de exclude()
-
-    # Preparar datos para template
-    assets_list = []
-    for asset in assets:
-      assets_list.append({
-        'id': str(asset.id),
-        'code': asset.code,
-        'name': asset.name,
-        'associated': str(asset.id) in [str(aid) for aid in enterprise_assets_ids]
-      })
-
-    # Paginación
-    total_assets = len(assets_list)
-    total_pages = math.ceil(total_assets / per_page)
-    offset = (page_number - 1) * per_page
-    paginated_assets = assets_list[offset:offset + per_page]
+    if result is None:
+      messages.error(request, 'Error al cargar activos')
+      return redirect('enterprises_list')
 
     context = {
-      'assets': paginated_assets,
+      'assets': result['assets'],
       'search_query': search_query,
       'code_query': code_query,
-      'page': page_number,
-      'per_page': per_page,
+      'page': result['page_number'],
+      'per_page': result['per_page'],
       'association_status': int(association_status),
-      'total_assets': total_assets,
-      'total_pages': total_pages,
+      'total_assets': result['total_assets'],
+      'total_pages': result['total_pages'],
       'nav_link': nav_link,
-      'start_record': offset + 1,
-      'end_record': min(offset + per_page, total_assets),
+      'start_record': result['offset'] + 1,
+      'end_record': min(result['offset'] + result['per_page'], result['total_assets']),
       'enterprise_id': enterprise_id,
     }
 

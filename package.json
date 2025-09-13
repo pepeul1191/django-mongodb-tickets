@@ -11,7 +11,9 @@
   "scripts": {
     "dev:rollup": "rollup -c -w",
     "dev:django": "python manage.py runserver",
-    "dev": "concurrently -p \"[{name}]\" -n \"ROLLUP,DJANGO\" -c \"bgRed.bold,bgGreen.bold\" \"npm run dev:rollup\" \"npm run dev:django\"",
+    "dev:access": "bash -c 'cd /home/pepev/Documentos/go/access && npm run dev:gin 2>/dev/null'",
+    "dev:files": "bash -c 'cd /home/pepev/Documentos/go/files && go run main.go 2>/dev/null'",
+    "dev": "concurrently -p \"[{name}]\" -n \"ROLLUP,DJANGO,ACCESS,FILES\" -c \"bgRed.bold,bgGreen.bold,bgBlue.bold,bgOrange.bold\" \"npm run dev:rollup\" \"npm run dev:django\" \"npm run dev:access\" \"npm run dev:files\"",
     "build": "rollup -c",
     "start": "python manage.py runserver"
   },
